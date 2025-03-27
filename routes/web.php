@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('language/{lang}', [LanguageController::class, 'switchLang'])->name('language.switch');
 
 Route::get('/', function () {
     return Inertia::render('welcome');

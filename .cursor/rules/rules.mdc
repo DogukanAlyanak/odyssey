@@ -18,10 +18,12 @@ alwaysApply: true
 
 # Frontend Yapısı
 
+- Laravel react kit ile ön yüz tasarımı kuruldu, dolayısıyla proje react ona göre oluştur sayfaları.
 - @components, componentleri buradan kullan.
 - Oluşturacağın sayfaları ayarlar, profil, şifre sıfırlama sayfalarını temel alarak yap.
 - Sayfaları oluştururken Shadcn UI ve Radix UI kurallarına uyarak ve Shadcn UI ve Radix UI komponentlerine bağlı kalarak oluştur.
 - https://ui.shadcn.com/docs/monorepo ve https://www.radix-ui.com/themes/docs/overview/getting-started buradan dökümanlara ulaşabilirsin. komponentleri verimli kullan.
+- react dosyaları bu projede küçü
 
 
 # Fonksiyon tercihleri
