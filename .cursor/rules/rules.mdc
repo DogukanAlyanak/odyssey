@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Proje Temelleri
+
+- Heard ile projeyi ayağa kaldırıyoruz.
+- Bu proje Laravel 12 Projesidir.
+- Laravel 12 Rect Starter Kit kullanıyoruz.
+
+
+# Proje Yapısı
+- kernel.php yok bootstrap/app.php içini oku ona göre yap.
+- config/app.php içini oku ona göre yap.
+
+
+# Fonksiyon tercihleri
+
+- dil verileri girerken __() kullanma trans() kullan.
+- @components, componentleri buradan kullan.
+- @resources/js/pages/settings/profile.tsx, @resources/js/pages/settings/profile.tsx, @resources/js/pages/settings/password.tsx, @resources/js/pages/dashboard.tsx, @resources/js/pages/welcome.tsx içini oku, bu sayfaları örnek al ona göre yap.
