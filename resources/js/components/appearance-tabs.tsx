@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { LucideIcon, Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AppearanceToggleTab({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
     const { t } = useTranslation();
@@ -32,5 +33,34 @@ export default function AppearanceToggleTab({ className = '', ...props }: HTMLAt
                 </button>
             ))}
         </div>
+    );
+}
+
+export function AppearanceTabs() {
+    const { t } = useTranslation();
+
+    return (
+        <Tabs defaultValue="light" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="light">{t('appearance.light')}</TabsTrigger>
+                <TabsTrigger value="dark">{t('appearance.dark')}</TabsTrigger>
+                <TabsTrigger value="system">{t('appearance.system')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="light" className="mt-4">
+                <div className="rounded-lg border p-4">
+                    <p className="text-sm text-muted-foreground">{t('appearance.light_description')}</p>
+                </div>
+            </TabsContent>
+            <TabsContent value="dark" className="mt-4">
+                <div className="rounded-lg border p-4">
+                    <p className="text-sm text-muted-foreground">{t('appearance.dark_description')}</p>
+                </div>
+            </TabsContent>
+            <TabsContent value="system" className="mt-4">
+                <div className="rounded-lg border p-4">
+                    <p className="text-sm text-muted-foreground">{t('appearance.system_description')}</p>
+                </div>
+            </TabsContent>
+        </Tabs>
     );
 }

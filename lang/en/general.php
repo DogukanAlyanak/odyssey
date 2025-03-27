@@ -34,4 +34,8 @@ return [
     'current_language' => 'Current Language',
     'language_changed' => 'Language changed successfully',
     'language_change_error' => 'An error occurred while changing the language',
+
+    'nav' => [
+        'platform' => 'Platform',
+    ],
 ];

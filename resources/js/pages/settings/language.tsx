@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 
-import LanguageTabs from '@/components/language-tabs';
+import { LanguageTabs } from '@/components/language-tabs';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
@@ -13,20 +13,20 @@ export default function Language() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t('general.language_settings'),
+            title: t('language.title'),
             href: '/settings/language',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('general.language_settings')} />
+            <Head title={t('language.title')} />
 
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title={t('general.language_settings')}
-                        description={t('general.select_language_description')}
+                        title={t('language.title')}
+                        description={t('language.description')}
                     />
                     <LanguageTabs />
                 </div>

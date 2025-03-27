@@ -17,4 +17,7 @@ return [
     'font_size' => 'Font Size',
     'font_size_description' => 'Choose your application\'s font size',
     'saved' => 'Saved',
+    'light_description' => 'Use light theme',
+    'dark_description' => 'Use dark theme',
+    'system_description' => 'Use system theme',
 ];

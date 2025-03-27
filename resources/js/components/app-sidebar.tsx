@@ -7,10 +7,11 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Users } from 'lucide-react';
 import AppLogo from './app-logo';
+import { useTranslation } from '@/hooks/use-translation';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'sidebar.dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
     },
@@ -18,18 +19,20 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
+        title: 'sidebar.repository',
         href: 'https://github.com/laravel/react-starter-kit',
         icon: Folder,
     },
     {
-        title: 'Documentation',
+        title: 'sidebar.documentation',
         href: 'https://laravel.com/docs/starter-kits',
         icon: BookOpen,
     },
 ];
 
 export function AppSidebar() {
+    const { t } = useTranslation();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

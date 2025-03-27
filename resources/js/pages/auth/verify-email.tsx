@@ -1,41 +1,37 @@
 // Components
-import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import { useTranslation } from '@/hooks/use-translation';
 
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/auth-layout';
+import { Button } from '@/components/ui/button';
 
 export default function VerifyEmail({ status }: { status?: string }) {
-    const { post, processing } = useForm({});
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-
-        post(route('verification.send'));
-    };
+    const { t } = useTranslation();
 
     return (
-        <AuthLayout title="Verify email" description="Please verify your email address by clicking on the link we just emailed to you.">
-            <Head title="Email verification" />
+        <AuthLayout>
+            <Head title={t('auth.verify_email.title')} />
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address you provided during registration.
+            <div className="w-full sm:max-w-md">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold tracking-tight">{t('auth.verify_email.title')}</h2>
+                    <p className="text-sm text-muted-foreground mt-2">{t('auth.verify_email.description')}</p>
                 </div>
-            )}
 
-            <form onSubmit={submit} className="space-y-6 text-center">
-                <Button disabled={processing} variant="secondary">
-                    {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                    Resend verification email
-                </Button>
+                {status === 'verification-link-sent' && (
+                    <div className="mt-4 text-sm text-green-600">
+                        {t('auth.verify_email.messages.sent')}
+                    </div>
+                )}
 
-                <TextLink href={route('logout')} method="post" className="mx-auto block text-sm">
-                    Log out
-                </TextLink>
-            </form>
+                <div className="mt-8 space-y-6">
+                    <Button asChild className="w-full">
+                        <Link href={route('verification.send')} method="post">
+                            {t('auth.verify_email.messages.resend')}
+                        </Link>
+                    </Button>
+                </div>
+            </div>
         </AuthLayout>
     );
 }

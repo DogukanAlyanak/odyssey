@@ -1,6 +1,7 @@
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -11,30 +12,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Transition } from '@headlessui/react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Yönetim',
-        href: '/admin',
-    },
-    {
-        title: 'Kullanıcılar',
-        href: '/admin/users',
-    },
-    {
-        title: 'Yeni Kullanıcı',
-        href: '/admin/users/create',
-    },
-];
-
-type UserForm = {
-    name: string;
-    email: string;
-    password: string;
-    password_confirmation: string;
-}
-
 export default function Create() {
-    const { data, setData, post, errors, processing, reset, recentlySuccessful } = useForm<UserForm>({
+    const { t } = useTranslation();
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('admin.users.management'),
+            href: '/admin',
+        },
+        {
+            title: t('admin.users.title'),
+            href: '/admin/users',
+        },
+        {
+            title: t('admin.users.new_user'),
+            href: '/admin/users/create',
+        },
+    ];
+
+    const { data, setData, post, errors, processing, reset, recentlySuccessful } = useForm({
         name: '',
         email: '',
         password: '',
@@ -43,21 +38,20 @@ export default function Create() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
         post(route('admin.users.store'));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Yeni Kullanıcı" />
+            <Head title={t('admin.users.new_user')} />
 
             <AdminLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Yeni Kullanıcı" description="Sisteme yeni bir kullanıcı ekleyin" />
+                    <HeadingSmall title={t('admin.users.new_user')} description={t('admin.users.add_new_user')} />
 
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Ad Soyad</Label>
+                            <Label htmlFor="name">{t('admin.users.fields.name')}</Label>
                             <Input
                                 id="name"
                                 type="text"
@@ -65,59 +59,59 @@ export default function Create() {
                                 onChange={(e) => setData('name', e.target.value)}
                                 required
                                 autoFocus
-                                placeholder="Ad Soyad"
+                                placeholder={t('admin.users.fields.name')}
                             />
                             <InputError message={errors.name} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">E-posta Adresi</Label>
+                            <Label htmlFor="email">{t('admin.users.fields.email')}</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
-                                placeholder="E-posta Adresi"
+                                placeholder={t('admin.users.fields.email')}
                             />
                             <InputError message={errors.email} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Şifre</Label>
+                            <Label htmlFor="password">{t('admin.users.fields.password')}</Label>
                             <Input
                                 id="password"
                                 type="password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
                                 required
-                                placeholder="Şifre"
+                                placeholder={t('admin.users.fields.password')}
                             />
                             <InputError message={errors.password} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Şifre Tekrar</Label>
+                            <Label htmlFor="password_confirmation">{t('admin.users.fields.password_confirmation')}</Label>
                             <Input
                                 id="password_confirmation"
                                 type="password"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 required
-                                placeholder="Şifre Tekrar"
+                                placeholder={t('admin.users.fields.password_confirmation')}
                             />
                             <InputError message={errors.password_confirmation} />
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Button type="submit" disabled={processing}>Kaydet</Button>
+                            <Button type="submit" disabled={processing}>{t('admin.users.actions.save')}</Button>
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => reset()}
                                 disabled={processing}
                             >
-                                Sıfırla
+                                {t('admin.users.actions.reset')}
                             </Button>
 
                             <Transition
@@ -127,7 +121,7 @@ export default function Create() {
                                 leave="transition ease-in-out"
                                 leaveTo="opacity-0"
                             >
-                                <p className="text-sm text-green-600">Kaydedildi</p>
+                                <p className="text-sm text-green-600">{t('admin.users.messages.saved')}</p>
                             </Transition>
                         </div>
                     </form>

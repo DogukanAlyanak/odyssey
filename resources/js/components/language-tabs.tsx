@@ -6,44 +6,35 @@ import { usePage } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
 import { type SharedData } from '@/types';
 
-export default function LanguageTabs() {
+export function LanguageTabs() {
     const { t } = useTranslation();
-    const { currentLocale: initialLocale } = usePage<SharedData>().props;
-    const [currentLocale, setCurrentLocale] = useState(initialLocale);
+    const page = usePage();
+    const [currentLocale, setCurrentLocale] = useState(page.props.currentLocale);
     const [recentlySuccessful, setRecentlySuccessful] = useState(false);
     const [processing, setProcessing] = useState(false);
 
     // Props değiştiğinde currentLocale'i güncelle
     useEffect(() => {
-        setCurrentLocale(initialLocale);
-    }, [initialLocale]);
+        setCurrentLocale(page.props.currentLocale);
+    }, [page.props.currentLocale]);
 
-    const availableLocales = {
-        tr: 'Türkçe',
-        en: 'English',
-    };
-
-    const handleLanguageChange = (locale: string) => {
-        if (locale === currentLocale) return;
+    const handleLanguageChange = (value: string) => {
+        if (value === currentLocale) return;
 
         setProcessing(true);
-        setCurrentLocale(locale);
+        setCurrentLocale(value);
 
-        router.put(route('language.update'), { locale }, {
-            preserveScroll: true,
+        router.post('/language', { locale: value }, {
             onSuccess: () => {
                 setRecentlySuccessful(true);
                 setProcessing(false);
                 setTimeout(() => setRecentlySuccessful(false), 2000);
-
-                // Sayfayı yenile
                 window.location.reload();
             },
             onError: () => {
                 setProcessing(false);
-                // Hata durumunda eski dile geri dön
-                setCurrentLocale(initialLocale);
-            }
+                setCurrentLocale(page.props.currentLocale);
+            },
         });
     };
 
@@ -51,19 +42,16 @@ export default function LanguageTabs() {
         <div className="space-y-4">
             <div className="space-y-2">
                 <Select
-                    value={currentLocale}
+                    value={currentLocale as string}
                     onValueChange={handleLanguageChange}
                     disabled={processing}
                 >
-                    <SelectTrigger>
-                        <SelectValue placeholder={t('general.select_language')} />
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('language.select_language')} />
                     </SelectTrigger>
                     <SelectContent>
-                        {Object.entries(availableLocales).map(([code, name]) => (
-                            <SelectItem key={code} value={code}>
-                                {name}
-                            </SelectItem>
-                        ))}
+                        <SelectItem value="en">{t('language.english')}</SelectItem>
+                        <SelectItem value="tr">{t('language.turkish')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>

@@ -24,3 +24,5 @@ alwaysApply: true
 - Sayfaları oluştururken Shadcn UI ve Radix UI kurallarına uyarak ve Shadcn UI ve Radix UI komponentlerine bağlı kalarak oluştur.
 - https://ui.shadcn.com/docs/monorepo ve https://www.radix-ui.com/themes/docs/overview/getting-started buradan dökümanlara ulaşabilirsin. komponentleri verimli kullan.
 - react dosya isimleri bu projede küçük harfle başlıyor.
+- sayfa oluştururken veya düzenlerken dillere dikkat et. @resources/js/pages/settings/appearance.tsx dosyasındaki gibi dilleri ayarla.
+- dil ayarlarında const { t } = useTranslation(); olmalı t fonksiyonu . dan önce ilk dosya adı sonra arraya göre dili bulmalı.

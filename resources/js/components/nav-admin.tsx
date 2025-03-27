@@ -2,15 +2,16 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { Users, UserPlus, UserCog, UserCheck } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 
 const adminNavItems: NavItem[] = [
     {
-        title: 'Kullanıcı Listesi',
+        title: 'admin.users.list',
         href: '/admin/users',
         icon: Users,
     },
     {
-        title: 'Yeni Kullanıcı',
+        title: 'admin.users.create',
         href: '/admin/users/create',
         icon: UserPlus,
     },
@@ -18,6 +19,7 @@ const adminNavItems: NavItem[] = [
 
 export function NavAdmin() {
     const page = usePage();
+    const { t } = useTranslation();
 
     // İlgili sayfalarda aktif göstermek için kontrol
     const isActive = (href: string) => {
@@ -39,18 +41,18 @@ export function NavAdmin() {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Yönetim</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('admin.title')}</SidebarGroupLabel>
             <SidebarMenu>
                 {adminNavItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                             asChild
                             isActive={isActive(item.href)}
-                            tooltip={{ children: item.title }}
+                            tooltip={{ children: t(item.title) }}
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

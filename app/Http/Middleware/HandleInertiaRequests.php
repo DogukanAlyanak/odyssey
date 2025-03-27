@@ -50,10 +50,13 @@ class HandleInertiaRequests extends Middleware
         app()->setLocale($locale);
 
         // Çevirileri yükle
-        $translations = [
-            'general' => require lang_path($locale . '/general.php'),
-            'appearance' => require lang_path($locale . '/appearance.php'),
-        ];
+        // cursora not : bu kısımda tüm dil dosyalarını yükler bu yüzden güncellemene gerek yok.
+        $translations = [];
+        $langFiles = glob(lang_path($locale . '/*.php'));
+        foreach ($langFiles as $file) {
+            $key = basename($file, '.php');
+            $translations[$key] = require $file;
+        }
 
         return [
             ...parent::share($request),

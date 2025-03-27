@@ -5,31 +5,34 @@ import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: 'settings.profile',
         href: '/settings/profile',
         icon: null,
     },
     {
-        title: 'Password',
+        title: 'settings.password',
         href: '/settings/password',
         icon: null,
     },
     {
-        title: 'Language',
+        title: 'settings.language',
         href: '/settings/language',
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'settings.appearance',
         href: '/settings/appearance',
         icon: null,
     },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
+    const { t } = useTranslation();
+
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
@@ -39,7 +42,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="px-4 py-6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+            <Heading title={t('settings.title')} description={t('settings.description')} />
 
             <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
@@ -55,7 +58,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 })}
                             >
                                 <Link href={item.href} prefetch>
-                                    {item.title}
+                                    {t(item.title)}
                                 </Link>
                             </Button>
                         ))}

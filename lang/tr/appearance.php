@@ -17,4 +17,7 @@ return [
     'font_size' => 'Yazı Boyutu',
     'font_size_description' => 'Uygulamanızın yazı boyutunu seçin',
     'saved' => 'Kaydedildi',
+    'light_description' => 'Açık tema kullan',
+    'dark_description' => 'Koyu tema kullan',
+    'system_description' => 'Sistem temasını kullan',
 ];
