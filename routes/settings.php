@@ -24,5 +24,6 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/language');
     })->name('language');
 
+    Route::put('settings/language', [LanguageController::class, 'update'])->name('language.update');
 
 });

@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
@@ -13,23 +13,36 @@ export default function LanguageTabs() {
     const [recentlySuccessful, setRecentlySuccessful] = useState(false);
     const [processing, setProcessing] = useState(false);
 
+    // Props değiştiğinde currentLocale'i güncelle
+    useEffect(() => {
+        setCurrentLocale(initialLocale);
+    }, [initialLocale]);
+
     const availableLocales = {
         tr: 'Türkçe',
         en: 'English',
     };
 
     const handleLanguageChange = (locale: string) => {
-        setCurrentLocale(locale);
+        if (locale === currentLocale) return;
+
         setProcessing(true);
-        router.get(route('language.switch', locale), {}, {
+        setCurrentLocale(locale);
+
+        router.put(route('language.update'), { locale }, {
             preserveScroll: true,
             onSuccess: () => {
                 setRecentlySuccessful(true);
                 setProcessing(false);
                 setTimeout(() => setRecentlySuccessful(false), 2000);
+
+                // Sayfayı yenile
+                window.location.reload();
             },
             onError: () => {
                 setProcessing(false);
+                // Hata durumunda eski dile geri dön
+                setCurrentLocale(initialLocale);
             }
         });
     };
@@ -40,6 +53,7 @@ export default function LanguageTabs() {
                 <Select
                     value={currentLocale}
                     onValueChange={handleLanguageChange}
+                    disabled={processing}
                 >
                     <SelectTrigger>
                         <SelectValue placeholder={t('general.select_language')} />

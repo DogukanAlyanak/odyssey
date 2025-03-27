@@ -39,6 +39,22 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Dil ayarını belirle
+        $locale = session('locale');
+        if (!$locale && $request->user()) {
+            $locale = $request->user()->locale;
+        }
+        $locale = $locale ?? config('app.locale');
+
+        // Uygulama dilini ayarla
+        app()->setLocale($locale);
+
+        // Çevirileri yükle
+        $translations = [
+            'general' => require lang_path($locale . '/general.php'),
+            'appearance' => require lang_path($locale . '/appearance.php'),
+        ];
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -50,10 +66,8 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'currentLocale' => session('locale', config('app.locale')),
-            'translations' => [
-                'general' => require lang_path(session('locale', config('app.locale')) . '/general.php'),
-            ],
+            'currentLocale' => $locale,
+            'translations' => $translations,
         ];
     }
 }
