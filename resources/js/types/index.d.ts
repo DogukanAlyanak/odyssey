@@ -1,6 +1,13 @@
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
+declare global {
+    function trans(key: string): string;
+    interface Window {
+        currentLocale: string;
+    }
+}
+
 export interface Auth {
     user: User;
 }
@@ -27,6 +34,10 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
+    currentLocale: string;
+    translations: {
+        general: Record<string, string>;
+    };
     [key: string]: unknown;
 }
 

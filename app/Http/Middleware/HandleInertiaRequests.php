@@ -49,7 +49,11 @@ class HandleInertiaRequests extends Middleware
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
-            ]
+            ],
+            'currentLocale' => session('locale', config('app.locale')),
+            'translations' => [
+                'general' => require lang_path(session('locale', config('app.locale')) . '/general.php'),
+            ],
         ];
     }
 }
