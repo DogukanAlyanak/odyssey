@@ -21,6 +21,7 @@ alwaysApply: true
 - @components, componentleri buradan kullan.
 - Oluşturacağın sayfaları ayarlar, profil, şifre sıfırlama sayfalarını temel alarak yap.
 - Sayfaları oluştururken Shadcn UI kurallarına uyarak ve Shadcn UI komponentlerine bağlı kalarak oluştur.
+- https://ui.shadcn.com/docs/monorepo buradan dökümanlara ulaşabilirsin. komponentleri verimli kullan.
 
 
 # Fonksiyon tercihleri
