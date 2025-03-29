@@ -1,7 +1,8 @@
-import React, { FormEventHandler, useEffect, useState } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { BreadcrumbItem } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
+import axios from 'axios';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -21,6 +22,7 @@ interface Permission {
     name: string;
     display_name: string;
     description: string;
+    checked: boolean;
 }
 
 interface Role {
@@ -38,12 +40,20 @@ interface EditProps {
 
 export default function Edit({ role, permissions = [] }: EditProps) {
     const { t } = useTranslation();
+
+    // İlk yükleme için boş bir permissions dizisi oluştur
+    const initialPermissions = permissions
+        .filter(p => p.checked)
+        .map(p => p.id);
+
     const { data, setData, put, errors, processing, recentlySuccessful } = useForm({
         name: role?.name || '',
         description: role?.description || '',
-        permissions: role?.permissions?.map(permission => permission.id) || [],
+        permissions: initialPermissions,
     });
+
     const [error, setError] = useState<string | null>(null);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -67,13 +77,54 @@ export default function Edit({ role, permissions = [] }: EditProps) {
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         setError(null);
+        setIsSuccess(false);
+
         if (role?.id) {
-            put(route('admin.roles.update', role.id), {
-                onError: (errors) => {
-                    if (errors.error) {
-                        setError(errors.error);
-                    }
+            // Null değerleri filtrele
+            const cleanedData = {
+                ...data,
+                permissions: Array.isArray(data.permissions)
+                    ? data.permissions.filter(p => p !== null)
+                    : []
+            };
+
+            // POST metodu kullanarak formu gönder
+            axios.post(`/admin/roles/${role.id}`, {
+                ...cleanedData,
+                _method: 'PUT'
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json'
                 }
+            })
+            .then(response => {
+                setIsSuccess(true);
+                // Debug logunu kaldırıyorum
+
+                // Role verilerini güncelle
+                if (response.data && response.data.role) {
+                    const updatedRole = response.data.role;
+                    // Güncellenmiş rol izinlerini al
+                    const updatedPermissionIds = updatedRole.permissions.map((p: any) => p.id);
+
+                    // Form verilerini güncelle
+                    setData('permissions', updatedPermissionIds);
+
+                    // Checkbox durumlarını güncellemek için permissions prop'unu güncelle
+                    permissions.forEach(p => {
+                        p.checked = updatedPermissionIds.includes(p.id);
+                    });
+                }
+            })
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.error) {
+                    setError(error.response.data.error);
+                } else {
+                    setError(t('admin.roles.messages.update_error'));
+                }
+                // Debug logunu kaldırıyorum
             });
         }
     };
@@ -83,17 +134,22 @@ export default function Edit({ role, permissions = [] }: EditProps) {
             return [];
         }
 
+        // Debug logunu kaldırıyorum
+
         return permissions.map((permission) => {
             if (!permission) return null;
 
             const permissionName = t(`permissions.permissions.${permission.name}.name`);
             const permissionDescription = t(`permissions.permissions.${permission.name}.description`);
 
+            // Backend'den gelen checked değerlerini kontrol et ve kullan
+            const isChecked = data.permissions.includes(permission.id) || permission.checked;
+
             return (
                 <div key={permission.id} className="flex items-center space-x-2 mb-2">
                     <Checkbox
                         id={`permission-${permission.id}`}
-                        checked={data.permissions.includes(permission.id)}
+                        checked={isChecked}
                         onCheckedChange={(checked) => {
                             if (checked) {
                                 setData('permissions', [...data.permissions, permission.id]);
@@ -127,7 +183,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                         />
                     </div>
 
-                    {role?.is_locked === 1 && (
+                    {role?.is_locked && (
                         <Alert variant="warning" className="mb-6">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>{t('admin.roles.locked_role_title')}</AlertTitle>
@@ -144,7 +200,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                                     <CardTitle>{t('admin.roles.general_info')}</CardTitle>
                                     <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4 pt-2">
+                                <CardContent className="space-y-4 pt-6">
                                     <div className="space-y-1">
                                         <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
                                         <Input
@@ -202,7 +258,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                                                 {error}
                                             </p>
                                         )}
-                                        {recentlySuccessful && (
+                                        {isSuccess && (
                                             <p className="text-sm text-green-600">
                                                 {t('admin.roles.messages.updated')}
                                             </p>

@@ -17,7 +17,7 @@ class Permission extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'slug',
+        'slug'
     ];
 
     /**
@@ -26,8 +26,7 @@ class Permission extends Model
      * @var array<int, string>
      */
     protected $appends = [
-        'name',
-        'description',
+        'display_name',
     ];
 
     /**
@@ -41,16 +40,11 @@ class Permission extends Model
     /**
      * İzin adını dil dosyasından alır
      */
-    public function getNameAttribute(): string
+    public function getDisplayNameAttribute(): string
     {
-        return Lang::get("permissions.permissions.{$this->slug}.name");
-    }
-
-    /**
-     * İzin açıklamasını dil dosyasından alır
-     */
-    public function getDescriptionAttribute(): string
-    {
-        return Lang::get("permissions.permissions.{$this->slug}.description");
+        return Lang::has("permissions.permissions.{$this->slug}.name")
+            ? Lang::get("permissions.permissions.{$this->slug}.name")
+            : $this->slug;
     }
 }
+
