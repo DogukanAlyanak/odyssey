@@ -3,51 +3,153 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
 use App\Models\Role;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class RoleController extends Controller
 {
     /**
-     * İzinleri listele
+     * Rolleri listele
      */
-    public function index()
+    public function index(): Response
     {
-        // Tüm izinleri getir
-        $permissions = Permission::all();
+        $roles = Role::query()
+            ->select(['id', 'slug', 'name', 'description', 'is_locked', 'created_at', 'updated_at'])
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        // Ad ve açıklama otomatik olarak aksesörler aracılığıyla verilir
-        // Görünüm için izinleri hazırla
-        $permissionsForView = $permissions->map(function ($permission) {
-            return [
-                'id' => $permission->id,
-                'slug' => $permission->slug,
-                'name' => $permission->name, // Dil dosyasından geliyor
-                'description' => $permission->description, // Dil dosyasından geliyor
-            ];
+        // Frontend'e localizedName ile gönderiyoruz
+        $roles->through(function ($role) {
+            $role->display_name = $role->localizedName;
+            return $role;
         });
 
-        // Tüm rolleri getir
-        $roles = Role::with('permissions')->get();
-
-        // Roller için çeviri desteği
-        $rolesForView = $roles->map(function ($role) {
-            return [
-                'id' => $role->id,
-                'slug' => $role->slug,
-                'name' => $role->name,
-                'localizedName' => $role->localizedName, // Dil dosyasından geliyor, eğer varsa
-                'description' => $role->description,
-                'isLocked' => $role->isLocked(),
-                'permissions' => $role->permissions->pluck('slug'),
-            ];
-        });
-
-        return Inertia::render('admin/roles/index', [
-            'permissions' => $permissionsForView,
-            'roles' => $rolesForView,
+        return Inertia::render('Admin/roles/Index', [
+            'roles' => $roles,
         ]);
+    }
+
+    /**
+     * Yeni rol oluşturma formunu göster
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Admin/roles/Create');
+    }
+
+    /**
+     * Yeni rol oluştur
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        // Frontend'den display_name alıyoruz ama veritabanına kaydetmiyoruz
+        // Slug'ı otomatik olarak isimden oluştur
+        $validated['slug'] = Str::slug($validated['name']);
+
+        Role::create($validated);
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'Rol başarıyla oluşturuldu.');
+    }
+
+    /**
+     * Rol detaylarını göster
+     */
+    public function show(Role $role): Response
+    {
+        $roleData = [
+            'id' => $role->id,
+            'name' => $role->name,
+            'slug' => $role->slug,
+            'display_name' => $role->localizedName, // Accessor ile çeviriden geliyor
+            'description' => $role->description,
+            'is_locked' => $role->is_locked,
+            'created_at' => $role->created_at,
+            'updated_at' => $role->updated_at,
+        ];
+
+        return Inertia::render('Admin/roles/Show', [
+            'role' => $roleData
+        ]);
+    }
+
+    /**
+     * Rol düzenleme formunu göster
+     */
+    public function edit(Role $role): Response
+    {
+        $roleData = [
+            'id' => $role->id,
+            'name' => $role->name,
+            'slug' => $role->slug,
+            'display_name' => $role->localizedName, // Accessor ile çeviriden geliyor
+            'description' => $role->description,
+            'is_locked' => $role->is_locked,
+        ];
+
+        return Inertia::render('Admin/roles/Edit', [
+            'role' => $roleData
+        ]);
+    }
+
+    /**
+     * Rolü güncelle
+     */
+    public function update(Request $request, Role $role): RedirectResponse
+    {
+        // Eğer rol kilitli ise güncelleme işlemini engelle
+        if ($role->isLocked()) {
+            return back()->withErrors(['error' => 'Bu rol sistem tarafından kilitlenmiş ve düzenlenemez.']);
+        }
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles', 'name')->ignore($role->id),
+            ],
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        // Frontend'den display_name alıyoruz ama veritabanına kaydetmiyoruz
+        // Slug'ı otomatik olarak isimden oluştur
+        $validated['slug'] = Str::slug($validated['name']);
+
+        $role->update($validated);
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'Rol başarıyla güncellendi.');
+    }
+
+    /**
+     * Rolü sil
+     */
+    public function destroy(Role $role): RedirectResponse
+    {
+        // Eğer rol kilitli ise silme işlemini engelle
+        if ($role->isLocked()) {
+            return back()->withErrors(['error' => 'Bu rol sistem tarafından kilitlenmiş ve silinemez.']);
+        }
+
+        // Rol ile kullanıcı ve izin ilişkilerini temizle
+        $role->users()->detach();
+        $role->permissions()->detach();
+
+        $role->delete();
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'Rol başarıyla silindi.');
     }
 }

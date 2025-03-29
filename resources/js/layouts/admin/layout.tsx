@@ -5,36 +5,50 @@ import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 
-const sidebarNavItems: NavItem[] = [
+const sidebarNavItems = (t): NavItem[] => [
     {
-        title: 'Kullanıcı Listesi',
+        title: t('admin.sidebar.users'),
         href: '/admin/users',
-        icon: null,
+        icon: 'user',
     },
     {
-        title: 'Yeni Kullanıcı',
+        title: t('admin.sidebar.new_user'),
         href: '/admin/users/create',
-        icon: null,
+        icon: 'user-plus',
+    },
+    {
+        title: t('admin.sidebar.roles'),
+        href: '/admin/roles',
+        icon: 'shield',
+    },
+    {
+        title: t('admin.sidebar.new_role'),
+        href: '/admin/roles/create',
+        icon: 'shield-plus',
     },
 ];
 
 export default function AdminLayout({ children }: PropsWithChildren) {
+    const { t } = useTranslation();
+
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
     }
 
     const currentPath = window.location.pathname;
+    const navItems = sidebarNavItems(t);
 
     return (
         <div className="px-4 py-6">
-            <Heading title="Yönetim" description="Sistem yönetimini buradan yapabilirsiniz" />
+            <Heading title={t('admin.dashboard.title')} description={t('admin.dashboard.description')} />
 
             <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item) => (
+                        {navItems.map((item) => (
                             <Button
                                 key={item.href}
                                 size="sm"
@@ -43,7 +57,9 @@ export default function AdminLayout({ children }: PropsWithChildren) {
                                 className={cn('w-full justify-start', {
                                     'bg-muted': currentPath === item.href ||
                                     (item.href === '/admin/users' && currentPath.match(/^\/admin\/users\/\d+$/)) ||
-                                    (item.href === '/admin/users' && currentPath.match(/^\/admin\/users\/\d+\/edit$/)),
+                                    (item.href === '/admin/users' && currentPath.match(/^\/admin\/users\/\d+\/edit$/)) ||
+                                    (item.href === '/admin/roles' && currentPath.match(/^\/admin\/roles\/\d+$/)) ||
+                                    (item.href === '/admin/roles' && currentPath.match(/^\/admin\/roles\/\d+\/edit$/)),
                                 })}
                             >
                                 <Link href={item.href} prefetch>

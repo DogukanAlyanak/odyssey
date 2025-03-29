@@ -7,6 +7,17 @@ import { Fragment } from 'react';
 
 export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[] }) {
     const { t } = useTranslation();
+
+    // Title'ı çevirme fonksiyonu
+    const getTitle = (title: string) => {
+        // Eğer title bir çeviri anahtarı ise (içinde nokta varsa)
+        if (title.includes('.')) {
+            return t(title);
+        }
+        // Değilse doğrudan metni göster
+        return title;
+    };
+
     return (
         <>
             {breadcrumbs.length > 0 && (
@@ -18,10 +29,10 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[]
                                 <Fragment key={index}>
                                     <BreadcrumbItem>
                                         {isLast ? (
-                                            <BreadcrumbPage>{t(item.title)}</BreadcrumbPage>
+                                            <BreadcrumbPage>{getTitle(item.title)}</BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>{t(item.title)}</Link>
+                                                <Link href={item.href}>{getTitle(item.title)}</Link>
                                             </BreadcrumbLink>
                                         )}
                                     </BreadcrumbItem>

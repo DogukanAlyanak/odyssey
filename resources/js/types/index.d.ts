@@ -12,6 +12,11 @@ export interface Auth {
     user: User;
 }
 
+/**
+ * Ekmek kırıntısı (breadcrumb) öğesi
+ * @property title Görünen başlık (çeviri anahtarı veya doğrudan metin olabilir)
+ * @property href Yönlendirilecek bağlantı
+ */
 export interface BreadcrumbItem {
     title: string;
     href: string;
@@ -29,15 +34,16 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+/**
+ * Sayfa arasında paylaşılan veriler
+ */
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
     currentLocale: string;
-    translations: {
-        general: Record<string, string>;
-    };
+    translations: Record<string, any>;
     [key: string]: unknown;
 }
 
