@@ -14,6 +14,11 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
 
         if (typeof window !== 'undefined') {
             localStorage.setItem('sidebar', String(open));
+
+            // Eğer sidebar kapandıysa ve ekran mobil ise, body elementinden overflow hidden sınıfını kaldır
+            if (!open && window.innerWidth < 768) {
+                document.body.classList.remove('overflow-hidden');
+            }
         }
     };
 
