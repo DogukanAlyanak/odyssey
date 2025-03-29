@@ -94,7 +94,6 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                                 setData('permissions', data.permissions.filter(id => id !== permission.id));
                             }
                         }}
-                        disabled={role?.is_locked}
                     />
                     <Label
                         htmlFor={`permission-${permission.id}`}
@@ -121,7 +120,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                         />
                     </div>
 
-                    {role?.is_locked && (
+                    {role?.is_locked === 1 && (
                         <Alert variant="warning" className="mb-6">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>{t('admin.roles.locked_role_title')}</AlertTitle>
@@ -131,83 +130,85 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                         </Alert>
                     )}
 
-                    <form onSubmit={submit} className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('admin.roles.general_info')}</CardTitle>
-                                <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-1">
-                                    <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
-                                    <div className="text-md border rounded-md px-3 py-2 bg-gray-50">
-                                        {role?.display_name}
+                    <div>
+                        <form onSubmit={submit} className="space-y-6">
+                            <Card className="relative">
+                                <CardHeader className="pb-0">
+                                    <CardTitle>{t('admin.roles.general_info')}</CardTitle>
+                                    <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-6">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
+                                        <div className="text-md border rounded-md px-3 py-2 bg-gray-50">
+                                            {role?.display_name}
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            {t('admin.roles.fields.display_name_help')}
+                                        </p>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        {t('admin.roles.fields.display_name_help')}
-                                    </p>
-                                </div>
 
-                                <div className="space-y-1">
-                                    <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        required
-                                        disabled={role?.is_locked || processing}
-                                    />
-                                    <InputError message={errors.name} />
-                                    <p className="text-sm text-muted-foreground">
-                                        {t('admin.roles.fields.name_help')}
-                                    </p>
-                                </div>
+                                    <div className="space-y-1">
+                                        <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
+                                        <Input
+                                            id="name"
+                                            type="text"
+                                            value={data.name}
+                                            onChange={(e) => setData('name', e.target.value)}
+                                            required
+                                            disabled={processing}
+                                        />
+                                        <InputError message={errors.name} />
+                                        <p className="text-sm text-muted-foreground">
+                                            {t('admin.roles.fields.name_help')}
+                                        </p>
+                                    </div>
 
-                                <div className="space-y-1">
-                                    <Label htmlFor="description">{t('admin.roles.fields.description')}</Label>
-                                    <Textarea
-                                        id="description"
-                                        value={data.description || ''}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                        disabled={role?.is_locked || processing}
-                                        rows={3}
-                                    />
-                                    <InputError message={errors.description} />
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    <div className="space-y-1">
+                                        <Label htmlFor="description">{t('admin.roles.fields.description')}</Label>
+                                        <Textarea
+                                            id="description"
+                                            value={data.description || ''}
+                                            onChange={(e) => setData('description', e.target.value)}
+                                            disabled={processing}
+                                            rows={3}
+                                        />
+                                        <InputError message={errors.description} />
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('admin.roles.permissions')}</CardTitle>
-                                <CardDescription>{t('admin.roles.permissions_description')}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {renderPermissionList()}
-                                </div>
-                                <InputError message={errors.permissions} className="mt-2" />
-                            </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={route('admin.roles.index')}>
-                                        {t('admin.roles.actions.cancel')}
-                                    </Link>
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing || role?.is_locked}
-                                >
-                                    {t('admin.roles.actions.save')}
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </form>
+                            <Card className="relative">
+                                <CardHeader className="pb-0">
+                                    <CardTitle>{t('admin.roles.permissions')}</CardTitle>
+                                    <CardDescription>{t('admin.roles.permissions_description')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="pt-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {renderPermissionList()}
+                                    </div>
+                                    <InputError message={errors.permissions} className="mt-2" />
+                                </CardContent>
+                                <CardFooter className="flex justify-between">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={route('admin.roles.index')}>
+                                            {t('admin.roles.actions.cancel')}
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                    >
+                                        {t('admin.roles.actions.save')}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </form>
+                    </div>
                 </div>
             </AdminLayout>
         </AppLayout>

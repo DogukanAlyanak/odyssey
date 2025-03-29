@@ -184,7 +184,6 @@ export default function Index({ roles }: RolesIndexProps) {
                                                                 size="sm"
                                                                 asChild
                                                                 className="h-8 px-2"
-                                                                disabled={role.is_locked}
                                                             >
                                                                 <Link href={route('admin.roles.edit', role.id)}>
                                                                     {t('admin.roles.actions.edit')}

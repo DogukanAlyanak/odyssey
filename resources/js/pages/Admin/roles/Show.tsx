@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -31,6 +39,8 @@ import {
     AlertDescription,
     AlertTitle,
 } from '@/components/ui/alert';
+import AlertDialog from '@/components/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface Permission {
     id: number;
@@ -63,6 +73,8 @@ interface ShowProps {
 
 export default function Show({ role }: ShowProps) {
     const { t } = useTranslation();
+    const { toast } = useToast();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -78,6 +90,24 @@ export default function Show({ role }: ShowProps) {
             href: `/admin/roles/${role?.id || ''}`,
         },
     ];
+
+    const handleDelete = () => {
+        window.axios.delete(`/api/v1/roles/${role.id}`)
+            .then(() => {
+                toast({
+                    title: t('admin.roles.deleted'),
+                    description: t('admin.roles.delete_success'),
+                });
+                window.location.href = route('admin.roles.index');
+            })
+            .catch(() => {
+                toast({
+                    title: t('admin.roles.delete_error'),
+                    description: t('admin.roles.delete_error_description'),
+                    variant: 'destructive',
+                });
+            });
+    };
 
     if (!role) {
         return (
@@ -139,24 +169,49 @@ export default function Show({ role }: ShowProps) {
                 <div className="space-y-6">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
-                            title={role.display_name || ''}
-                            description={t('admin.roles.show_description')}
+                            title={t('admin.roles.role_details')}
+                            description={t('admin.roles.view_role_details')}
                         />
                         <div className="flex gap-2">
+                            {!role?.is_locked && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="px-2 shadow-none"
+                                        >
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Open</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem asChild>
+                                            <Link href={route('admin.roles.edit', { id: role?.id })} className="flex items-center">
+                                                <Pencil className="w-4 h-4 mr-2 text-muted-foreground" />
+                                                <span>{t('admin.roles.actions.edit')}</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowDeleteDialog(true)}
+                                                className="w-full flex items-center"
+                                            >
+                                                <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                                <span className="text-destructive">{t('admin.roles.actions.delete')}</span>
+                                            </button>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                             <Button
+                                type="button"
                                 variant="outline"
                                 asChild
                             >
                                 <Link href={route('admin.roles.index')}>
                                     {t('admin.roles.actions.back')}
-                                </Link>
-                            </Button>
-                            <Button
-                                asChild
-                                disabled={role.is_locked}
-                            >
-                                <Link href={route('admin.roles.edit', role.id)}>
-                                    {t('admin.roles.actions.edit')}
                                 </Link>
                             </Button>
                         </div>
@@ -172,51 +227,55 @@ export default function Show({ role }: ShowProps) {
                         </Alert>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader>
+                    <div>
+                        <Card className="relative">
+                            <CardHeader className="pb-0">
                                 <CardTitle>{t('admin.roles.general_info')}</CardTitle>
-                                <CardDescription>{t('admin.roles.role_details')}</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.display_name')}</h3>
-                                        <p className="mt-1 text-sm font-semibold">{role.display_name}</p>
+                            <CardContent className="pt-6">
+                                <div className="grid gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.display_name')}</h3>
+                                            <p className="mt-1 text-sm">{role.display_name}</p>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.name')}</h3>
+                                            <p className="mt-1 text-sm">{role.name}</p>
+                                        </div>
                                     </div>
+
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.name')}</h3>
-                                        <p className="mt-1 text-sm font-semibold">{role.name}</p>
-                                    </div>
-                                    <div className="col-span-2">
                                         <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.description')}</h3>
                                         <p className="mt-1 text-sm">{role.description || t('admin.roles.no_description')}</p>
                                     </div>
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.created_at')}</h3>
-                                        <p className="mt-1 text-sm">{role.created_at ? new Date(role.created_at).toLocaleDateString() : '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.updated_at')}</h3>
-                                        <p className="mt-1 text-sm">{role.updated_at ? new Date(role.updated_at).toLocaleDateString() : '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.status')}</h3>
-                                        <div className="mt-1">
-                                            {role.is_locked ? (
-                                                <Badge variant="outline" className="border-amber-500 text-amber-500">
-                                                    {t('admin.roles.statuses.locked')}
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="border-emerald-500 text-emerald-500">
-                                                    {t('admin.roles.statuses.editable')}
-                                                </Badge>
-                                            )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.created_at')}</h3>
+                                            <p className="mt-1 text-sm">{role.created_at ? new Date(role.created_at).toLocaleDateString() : '-'}</p>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.updated_at')}</h3>
+                                            <p className="mt-1 text-sm">{role.updated_at ? new Date(role.updated_at).toLocaleDateString() : '-'}</p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.users')}</h3>
-                                        <p className="mt-1 text-sm">{role.users?.length || 0} {t('admin.roles.users')}</p>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.status')}</h3>
+                                            <div className="mt-1">
+                                                {role.is_locked ? (
+                                                    <Badge variant="destructive">{t('admin.roles.locked')}</Badge>
+                                                ) : (
+                                                    <Badge variant="outline">{t('admin.roles.editable')}</Badge>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.users')}</h3>
+                                            <p className="mt-1 text-sm">{role.users?.length || 0} {t('admin.roles.users')}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -238,6 +297,17 @@ export default function Show({ role }: ShowProps) {
                         </Card>
                     </div>
                 </div>
+
+                <AlertDialog
+                    title={t('admin.roles.delete_role')}
+                    description={t('admin.roles.delete_confirm')}
+                    open={showDeleteDialog}
+                    onOpenChange={setShowDeleteDialog}
+                    onAction={handleDelete}
+                    actionText={t('admin.roles.actions.delete')}
+                    cancelText={t('admin.roles.actions.cancel')}
+                    destructive
+                />
             </AdminLayout>
         </AppLayout>
     );

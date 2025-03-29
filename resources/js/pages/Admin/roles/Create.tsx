@@ -103,89 +103,91 @@ export default function Create({ permissions = [] }: CreateProps) {
                         />
                     </div>
 
-                    <form onSubmit={submit} className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('admin.roles.general_info')}</CardTitle>
-                                <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-1">
-                                    <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
-                                    <Input
-                                        id="display_name"
-                                        type="text"
-                                        value={data.display_name}
-                                        onChange={(e) => setData('display_name', e.target.value)}
-                                        required
-                                        disabled={processing}
-                                        placeholder={t('admin.roles.placeholders.display_name')}
-                                    />
-                                    <InputError message={errors.display_name} />
-                                </div>
+                    <div>
+                        <form onSubmit={submit} className="space-y-6">
+                            <Card className="relative">
+                                <CardHeader className="pb-0">
+                                    <CardTitle>{t('admin.roles.general_info')}</CardTitle>
+                                    <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-6">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
+                                        <Input
+                                            id="display_name"
+                                            type="text"
+                                            value={data.display_name}
+                                            onChange={(e) => setData('display_name', e.target.value)}
+                                            required
+                                            disabled={processing}
+                                            placeholder={t('admin.roles.placeholders.display_name')}
+                                        />
+                                        <InputError message={errors.display_name} />
+                                    </div>
 
-                                <div className="space-y-1">
-                                    <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        required
-                                        disabled={processing}
-                                        placeholder={t('admin.roles.placeholders.name')}
-                                    />
-                                    <InputError message={errors.name} />
-                                    <p className="text-sm text-muted-foreground">
-                                        {t('admin.roles.fields.name_help')}
-                                    </p>
-                                </div>
+                                    <div className="space-y-1">
+                                        <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
+                                        <Input
+                                            id="name"
+                                            type="text"
+                                            value={data.name}
+                                            onChange={(e) => setData('name', e.target.value)}
+                                            required
+                                            disabled={processing}
+                                            placeholder={t('admin.roles.placeholders.name')}
+                                        />
+                                        <InputError message={errors.name} />
+                                        <p className="text-sm text-muted-foreground">
+                                            {t('admin.roles.fields.name_help')}
+                                        </p>
+                                    </div>
 
-                                <div className="space-y-1">
-                                    <Label htmlFor="description">{t('admin.roles.fields.description')}</Label>
-                                    <Textarea
-                                        id="description"
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                        disabled={processing}
-                                        rows={3}
-                                        placeholder={t('admin.roles.placeholders.description')}
-                                    />
-                                    <InputError message={errors.description} />
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    <div className="space-y-1">
+                                        <Label htmlFor="description">{t('admin.roles.fields.description')}</Label>
+                                        <Textarea
+                                            id="description"
+                                            value={data.description}
+                                            onChange={(e) => setData('description', e.target.value)}
+                                            disabled={processing}
+                                            rows={3}
+                                            placeholder={t('admin.roles.placeholders.description')}
+                                        />
+                                        <InputError message={errors.description} />
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('admin.roles.permissions')}</CardTitle>
-                                <CardDescription>{t('admin.roles.permissions_description')}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {renderPermissionList()}
-                                </div>
-                                <InputError message={errors.permissions} className="mt-2" />
-                            </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={route('admin.roles.index')}>
-                                        {t('admin.roles.actions.cancel')}
-                                    </Link>
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing}
-                                >
-                                    {t('admin.roles.actions.create')}
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </form>
+                            <Card className="relative">
+                                <CardHeader className="pb-0">
+                                    <CardTitle>{t('admin.roles.permissions')}</CardTitle>
+                                    <CardDescription>{t('admin.roles.permissions_description')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="pt-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {renderPermissionList()}
+                                    </div>
+                                    <InputError message={errors.permissions} className="mt-2" />
+                                </CardContent>
+                                <CardFooter className="flex justify-between">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={route('admin.roles.index')}>
+                                            {t('admin.roles.actions.cancel')}
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                    >
+                                        {t('admin.roles.actions.create')}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </form>
+                    </div>
                 </div>
             </AdminLayout>
         </AppLayout>
