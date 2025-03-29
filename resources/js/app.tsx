@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client';
 // import { initializeTheme } from './hooks/use-appearance';
 import { useTranslation } from '@/hooks/use-translation';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/components/toaster';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

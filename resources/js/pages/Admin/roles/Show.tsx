@@ -39,7 +39,17 @@ import {
     AlertDescription,
     AlertTitle,
 } from '@/components/ui/alert';
-import AlertDialog from '@/components/alert-dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 
 interface Permission {
@@ -173,7 +183,7 @@ export default function Show({ role }: ShowProps) {
                             description={t('admin.roles.view_role_details')}
                         />
                         <div className="flex gap-2">
-                            {!role?.is_locked && (
+                            {!role.is_locked && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
@@ -216,9 +226,8 @@ export default function Show({ role }: ShowProps) {
                             </Button>
                         </div>
                     </div>
-
-                    {role.is_locked && (
-                        <Alert variant="warning">
+                    {role.is_locked === 1 && (
+                        <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>{t('admin.roles.locked_role_title')}</AlertTitle>
                             <AlertDescription>
@@ -281,33 +290,44 @@ export default function Show({ role }: ShowProps) {
                             </CardContent>
                         </Card>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t('admin.roles.permissions')}</CardTitle>
-                                <CardDescription>{t('admin.roles.role_permissions')}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {renderPermissionList()}
-                            </CardContent>
-                            <CardFooter>
-                                <p className="text-sm text-gray-500">
-                                    {t('admin.roles.total_permissions', { count: role.permissions?.length || 0 })}
-                                </p>
-                            </CardFooter>
-                        </Card>
+                        <div className="mt-6">
+                            <Card className="relative">
+                                <CardHeader className="pb-0">
+                                    <CardTitle>{t('admin.roles.permissions')}</CardTitle>
+                                    <CardDescription>{t('admin.roles.role_permissions')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="pt-6">
+                                    {renderPermissionList()}
+                                </CardContent>
+                                <CardFooter>
+                                    <p className="text-sm text-gray-500">
+                                        {t('admin.roles.total_permissions', { count: role.permissions?.length || 0 })}
+                                    </p>
+                                </CardFooter>
+                            </Card>
+                        </div>
                     </div>
                 </div>
 
-                <AlertDialog
-                    title={t('admin.roles.delete_role')}
-                    description={t('admin.roles.delete_confirm')}
-                    open={showDeleteDialog}
-                    onOpenChange={setShowDeleteDialog}
-                    onAction={handleDelete}
-                    actionText={t('admin.roles.actions.delete')}
-                    cancelText={t('admin.roles.actions.cancel')}
-                    destructive
-                />
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>{t('admin.roles.delete_role')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t('admin.roles.delete_confirm')}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('admin.roles.actions.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDelete}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {t('admin.roles.actions.delete')}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </AdminLayout>
         </AppLayout>
     );
