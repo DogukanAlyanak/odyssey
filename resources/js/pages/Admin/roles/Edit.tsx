@@ -137,17 +137,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                                     <CardTitle>{t('admin.roles.general_info')}</CardTitle>
                                     <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4 pt-6">
-                                    <div className="space-y-1">
-                                        <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
-                                        <div className="text-md border rounded-md px-3 py-2 bg-gray-50">
-                                            {role?.display_name}
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {t('admin.roles.fields.display_name_help')}
-                                        </p>
-                                    </div>
-
+                                <CardContent className="space-y-4 pt-2">
                                     <div className="space-y-1">
                                         <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
                                         <Input

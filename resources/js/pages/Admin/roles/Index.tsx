@@ -155,7 +155,7 @@ export default function Index({ roles }: RolesIndexProps) {
                                     <table className="w-full text-sm">
                                         <thead className="bg-muted/50">
                                             <tr className="text-left">
-                                                <th className="px-4 py-3 font-medium">{t('admin.roles.fields.display_name')}</th>
+                                                <th className="px-4 py-3 font-medium">{t('admin.roles.fields.name')}</th>
                                                 <th className="px-4 py-3 font-medium">{t('admin.roles.fields.description')}</th>
                                                 <th className="px-4 py-3 font-medium text-right">{t('admin.roles.actions.title')}</th>
                                             </tr>
@@ -163,7 +163,7 @@ export default function Index({ roles }: RolesIndexProps) {
                                         <tbody>
                                             {roles?.data?.map((role) => (
                                                 <tr key={role.id} className="border-t">
-                                                    <td className="px-4 py-3 font-medium">{role.display_name}</td>
+                                                    <td className="px-4 py-3 font-medium">{role.name}</td>
                                                     <td className="px-4 py-3 max-w-xs truncate">
                                                         {role.description || '-'}
                                                     </td>

@@ -98,18 +98,15 @@ return [
         'fields' => [
             'id' => 'ID',
             'name' => 'Rol Adı',
-            'display_name' => 'Görünen Ad',
             'description' => 'Açıklama',
             'created_at' => 'Oluşturulma Tarihi',
             'updated_at' => 'Son Güncelleme',
             'users' => 'Kullanıcılar',
             'status' => 'Durum',
             'name_help' => 'Bu, sistemde kullanılacak olan teknik isimdir.',
-            'display_name_help' => 'Görünen ad sistem tarafından belirlenir ve değiştirilemez.',
         ],
         'placeholders' => [
             'name' => 'Rol adını girin',
-            'display_name' => 'Rolün görünen adını girin',
             'description' => 'Rol hakkında kısa bir açıklama girin',
         ],
         'actions' => [

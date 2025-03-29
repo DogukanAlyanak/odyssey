@@ -29,7 +29,6 @@ export default function Create({ permissions = [] }: CreateProps) {
     const { t } = useTranslation();
     const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
         name: '',
-        display_name: '',
         description: '',
         permissions: [] as number[],
     });
@@ -110,21 +109,7 @@ export default function Create({ permissions = [] }: CreateProps) {
                                     <CardTitle>{t('admin.roles.general_info')}</CardTitle>
                                     <CardDescription>{t('admin.roles.general_info_description')}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4 pt-6">
-                                    <div className="space-y-1">
-                                        <Label htmlFor="display_name">{t('admin.roles.fields.display_name')}</Label>
-                                        <Input
-                                            id="display_name"
-                                            type="text"
-                                            value={data.display_name}
-                                            onChange={(e) => setData('display_name', e.target.value)}
-                                            required
-                                            disabled={processing}
-                                            placeholder={t('admin.roles.placeholders.display_name')}
-                                        />
-                                        <InputError message={errors.display_name} />
-                                    </div>
-
+                                <CardContent className="space-y-4 pt-2">
                                     <div className="space-y-1">
                                         <Label htmlFor="name">{t('admin.roles.fields.name')}</Label>
                                         <Input

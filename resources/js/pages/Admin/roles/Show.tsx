@@ -96,7 +96,7 @@ export default function Show({ role }: ShowProps) {
             href: '/admin/roles',
         },
         {
-            title: role?.display_name || '',
+            title: role?.name || '',
             href: `/admin/roles/${role?.id || ''}`,
         },
     ];
@@ -173,7 +173,7 @@ export default function Show({ role }: ShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={role.display_name || ''} />
+            <Head title={role.name || ''} />
 
             <AdminLayout>
                 <div className="space-y-6">
@@ -226,8 +226,8 @@ export default function Show({ role }: ShowProps) {
                             </Button>
                         </div>
                     </div>
-                    {role.is_locked === 1 && (
-                        <Alert variant="destructive">
+                    {role.is_locked && (
+                        <Alert variant="warning">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>{t('admin.roles.locked_role_title')}</AlertTitle>
                             <AlertDescription>
@@ -245,12 +245,18 @@ export default function Show({ role }: ShowProps) {
                                 <div className="grid gap-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.display_name')}</h3>
-                                            <p className="mt-1 text-sm">{role.display_name}</p>
-                                        </div>
-                                        <div>
                                             <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.name')}</h3>
                                             <p className="mt-1 text-sm">{role.name}</p>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.status')}</h3>
+                                            <div className="mt-1">
+                                                {role.is_locked ? (
+                                                    <Badge variant="destructive">{t('admin.roles.locked')}</Badge>
+                                                ) : (
+                                                    <Badge variant="outline">{t('admin.roles.editable')}</Badge>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -270,21 +276,9 @@ export default function Show({ role }: ShowProps) {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.status')}</h3>
-                                            <div className="mt-1">
-                                                {role.is_locked ? (
-                                                    <Badge variant="destructive">{t('admin.roles.locked')}</Badge>
-                                                ) : (
-                                                    <Badge variant="outline">{t('admin.roles.editable')}</Badge>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.users')}</h3>
-                                            <p className="mt-1 text-sm">{role.users?.length || 0} {t('admin.roles.users')}</p>
-                                        </div>
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.users')}</h3>
+                                        <p className="mt-1 text-sm">{role.users?.length || 0} {t('admin.roles.users')}</p>
                                     </div>
                                 </div>
                             </CardContent>
