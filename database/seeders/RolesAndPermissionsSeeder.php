@@ -71,20 +71,20 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Demo admin kullanıcısı oluştur
         $adminUser = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@test.com'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Admin-1122'),
                 'email_verified_at' => now(),
             ]
         );
 
         // Demo editor kullanıcısı oluştur
         $editorUser = User::firstOrCreate(
-            ['email' => 'editor@example.com'],
+            ['email' => 'editor@test.com'],
             [
                 'name' => 'Editor User',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Admin-1122'),
                 'email_verified_at' => now(),
             ]
         );
