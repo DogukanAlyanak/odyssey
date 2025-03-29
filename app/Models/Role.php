@@ -6,6 +6,7 @@ use App\Enums\BooleanStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Lang;
 
 class Role extends Model
 {
@@ -108,5 +109,15 @@ class Role extends Model
     public function getIsLockedAttribute($value): BooleanStatus
     {
         return BooleanStatus::from($value);
+    }
+
+    /**
+     * Rol adının çevirisini döndürür
+     */
+    public function getLocalizedNameAttribute(): string
+    {
+        return Lang::has("permissions.roles.{$this->slug}") ?
+            Lang::get("permissions.roles.{$this->slug}") :
+            $this->name;
     }
 }

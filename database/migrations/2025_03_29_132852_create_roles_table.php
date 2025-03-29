@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\BooleanStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->tinyInteger('is_locked')->default(0);
+            $table->tinyInteger('is_locked')->default(BooleanStatus::FALSE->value);
             $table->timestamps();
         });
     }

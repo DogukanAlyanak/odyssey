@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -20,60 +21,40 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::truncate();
         Role::truncate();
 
-        // İzinleri oluştur
-        $createUserPermission = Permission::create([
-            'name' => 'Kullanıcı Oluştur',
-            'slug' => 'create_user',
-            'description' => 'Yeni kullanıcı oluşturabilir'
-        ]);
+        // İzinleri oluştur - sadece slug değerini veritabanında saklıyoruz
+        $permissions = [
+            'create_user',
+            'edit_user',
+            'delete_user',
+            'view_user',
+            'create_role',
+            'edit_role',
+            'delete_role',
+            'view_role',
+            'assign_role',
+            'revoke_role',
+        ];
 
-        $editUserPermission = Permission::create([
-            'name' => 'Kullanıcı Düzenle',
-            'slug' => 'edit_user',
-            'description' => 'Mevcut kullanıcıları düzenleyebilir'
-        ]);
+        $permissionModels = [];
 
-        $deleteUserPermission = Permission::create([
-            'name' => 'Kullanıcı Sil',
-            'slug' => 'delete_user',
-            'description' => 'Kullanıcıları silebilir'
-        ]);
-
-        $viewUserPermission = Permission::create([
-            'name' => 'Kullanıcı Görüntüle',
-            'slug' => 'view_user',
-            'description' => 'Kullanıcıları görüntüleyebilir'
-        ]);
-
-        $createRolePermission = Permission::create([
-            'name' => 'Rol Oluştur',
-            'slug' => 'create_role',
-            'description' => 'Yeni rol oluşturabilir'
-        ]);
-
-        $editRolePermission = Permission::create([
-            'name' => 'Rol Düzenle',
-            'slug' => 'edit_role',
-            'description' => 'Mevcut rolleri düzenleyebilir'
-        ]);
-
-        $deleteRolePermission = Permission::create([
-            'name' => 'Rol Sil',
-            'slug' => 'delete_role',
-            'description' => 'Rolleri silebilir'
-        ]);
-
-        $viewRolePermission = Permission::create([
-            'name' => 'Rol Görüntüle',
-            'slug' => 'view_role',
-            'description' => 'Rolleri görüntüleyebilir'
-        ]);
+        foreach ($permissions as $permissionSlug) {
+            $permissionModels[$permissionSlug] = Permission::create([
+                'slug' => $permissionSlug,
+            ]);
+        }
 
         // Rolleri oluştur
         $adminRole = Role::create([
             'name' => 'Yönetici',
             'slug' => 'admin',
             'description' => 'Tam yetkiye sahip kullanıcı',
+            'is_locked' => BooleanStatus::TRUE->value
+        ]);
+
+        $userRole = Role::create([
+            'name' => 'Kullanıcı',
+            'slug' => 'user',
+            'description' => 'Standart kullanıcı',
             'is_locked' => BooleanStatus::TRUE->value
         ]);
 
@@ -84,57 +65,32 @@ class RolesAndPermissionsSeeder extends Seeder
             'is_locked' => BooleanStatus::FALSE->value
         ]);
 
-        $userRole = Role::create([
-            'name' => 'Kullanıcı',
-            'slug' => 'user',
-            'description' => 'Standart kullanıcı',
-            'is_locked' => BooleanStatus::TRUE->value
-        ]);
-
         // Rollere izinleri ekle
-        $adminRole->givePermissionTo($createUserPermission);
-        $adminRole->givePermissionTo($editUserPermission);
-        $adminRole->givePermissionTo($deleteUserPermission);
-        $adminRole->givePermissionTo($viewUserPermission);
-        $adminRole->givePermissionTo($createRolePermission);
-        $adminRole->givePermissionTo($editRolePermission);
-        $adminRole->givePermissionTo($deleteRolePermission);
-        $adminRole->givePermissionTo($viewRolePermission);
-
-        $editorRole->givePermissionTo($viewUserPermission);
-        $editorRole->givePermissionTo($viewRolePermission);
+        $editorRole->givePermissionTo($permissionModels['view_user']);
+        $editorRole->givePermissionTo($permissionModels['view_role']);
 
         // Demo admin kullanıcısı oluştur
-        $admin = User::firstOrCreate([
-            'name' => 'Admin User',
-            'email' => 'admin@test.com',
-            'password' => Hash::make('Admin-1122'),
-            'email_verified_at' => now(),
-        ]);
-
-        // Demo editor kullanıcısı oluştur
-        $editor = User::firstOrCreate(
-            ['email' => 'editor@test.com'],
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
             [
-                'name' => 'Editor User',
-                'password' => Hash::make('Admin-1122'),
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
 
-        // Demo kullanıcı oluştur
-        $user = User::firstOrCreate(
-            ['email' => 'user@test.com'],
+        // Demo editor kullanıcısı oluştur
+        $editorUser = User::firstOrCreate(
+            ['email' => 'editor@example.com'],
             [
-                'name' => 'User User',
-                'password' => Hash::make('Admin-1122'),
+                'name' => 'Editor User',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
 
         // Kullanıcılara rolleri ata
-        $admin->assignRole($adminRole);
-        $editor->assignRole($editorRole);
-        $user->assignRole($userRole);
+        $adminUser->assignRole($adminRole);
+        $editorUser->assignRole($editorRole);
     }
 }

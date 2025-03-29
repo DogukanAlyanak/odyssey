@@ -23,13 +23,21 @@ class CheckPermission
 
         $user = Auth::user();
 
+        // Admin rolüne sahip kullanıcılar tüm izinlere sahiptir
+        if ($user->roles->contains('slug', 'admin')) {
+            return $next($request);
+        }
+
         if (empty($permissions)) {
             return $next($request);
         }
 
+        // İzin kontrolü
         foreach ($permissions as $permission) {
-            if ($user->hasPermissionViaRoles($permission)) {
-                return $next($request);
+            foreach ($user->roles as $role) {
+                if ($role->permissions->contains('slug', $permission)) {
+                    return $next($request);
+                }
             }
         }
 

@@ -18,15 +18,45 @@ return [
         'editor' => 'Editör',
     ],
     'permissions' => [
-        'create_user' => 'Kullanıcı Oluştur',
-        'edit_user' => 'Kullanıcı Düzenle',
-        'delete_user' => 'Kullanıcı Sil',
-        'view_user' => 'Kullanıcı Görüntüle',
-        'create_role' => 'Rol Oluştur',
-        'edit_role' => 'Rol Düzenle',
-        'delete_role' => 'Rol Sil',
-        'view_role' => 'Rol Görüntüle',
-        'assign_role' => 'Rol Ata',
-        'revoke_role' => 'Rol Kaldır',
+        'create_user' => [
+            'name' => 'Kullanıcı Oluştur',
+            'description' => 'Yeni kullanıcı oluşturabilir',
+        ],
+        'edit_user' => [
+            'name' => 'Kullanıcı Düzenle',
+            'description' => 'Mevcut kullanıcıları düzenleyebilir',
+        ],
+        'delete_user' => [
+            'name' => 'Kullanıcı Sil',
+            'description' => 'Kullanıcıları silebilir',
+        ],
+        'view_user' => [
+            'name' => 'Kullanıcı Görüntüle',
+            'description' => 'Kullanıcıları görüntüleyebilir',
+        ],
+        'create_role' => [
+            'name' => 'Rol Oluştur',
+            'description' => 'Yeni rol oluşturabilir',
+        ],
+        'edit_role' => [
+            'name' => 'Rol Düzenle',
+            'description' => 'Mevcut rolleri düzenleyebilir',
+        ],
+        'delete_role' => [
+            'name' => 'Rol Sil',
+            'description' => 'Rolleri silebilir',
+        ],
+        'view_role' => [
+            'name' => 'Rol Görüntüle',
+            'description' => 'Rolleri görüntüleyebilir',
+        ],
+        'assign_role' => [
+            'name' => 'Rol Ata',
+            'description' => 'Kullanıcılara rol atayabilir',
+        ],
+        'revoke_role' => [
+            'name' => 'Rol Kaldır',
+            'description' => 'Kullanıcılardan rol kaldırabilir',
+        ],
     ],
 ];
