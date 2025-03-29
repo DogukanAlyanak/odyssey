@@ -47,11 +47,14 @@ interface RolesIndexProps {
             total?: number;
         };
     };
+    filters: {
+        search: string;
+    };
 }
 
-export default function Index({ roles }: RolesIndexProps) {
+export default function Index({ roles, filters }: RolesIndexProps) {
     const { t } = useTranslation();
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [isDeleting, setIsDeleting] = useState(false);
     const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
     const [recentlySuccessful, setRecentlySuccessful] = useState(false);
@@ -67,11 +70,13 @@ export default function Index({ roles }: RolesIndexProps) {
         },
     ];
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
         router.get(
             route('admin.roles.index'),
-            { search: searchTerm },
+            { search: value },
             { preserveState: true }
         );
     };
@@ -119,16 +124,16 @@ export default function Index({ roles }: RolesIndexProps) {
                     </div>
 
                     <div className="flex justify-between items-center mb-4">
-                        <form onSubmit={handleSearch} className="relative w-full max-w-sm">
+                        <div className="relative w-full max-w-sm">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                             <Input
                                 type="search"
                                 placeholder={t('admin.roles.search_placeholder')}
                                 className="pl-8"
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={handleSearch}
                             />
-                        </form>
+                        </div>
                     </div>
 
                     {roles?.data?.length === 0 ? (

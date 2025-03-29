@@ -11,9 +11,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Transition } from '@headlessui/react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    SelectGroup,
+    SelectLabel,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from '@/components/ui/badge';
 
-export default function Create() {
+interface Role {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+}
+
+interface CreateProps {
+    roles: Role[];
+}
+
+export default function Create({ roles }: CreateProps) {
     const { t } = useTranslation();
+    const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: t('admin.users.management'),
@@ -34,7 +58,20 @@ export default function Create() {
         email: '',
         password: '',
         password_confirmation: '',
+        roles: [] as number[],
     });
+
+    const handleRoleChange = (roleId: number, checked: boolean) => {
+        if (checked) {
+            const newRoles = [...selectedRoles, roleId];
+            setSelectedRoles(newRoles);
+            setData('roles', newRoles);
+        } else {
+            const newRoles = selectedRoles.filter(id => id !== roleId);
+            setSelectedRoles(newRoles);
+            setData('roles', newRoles);
+        }
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -103,12 +140,46 @@ export default function Create() {
                             <InputError message={errors.password_confirmation} />
                         </div>
 
+                        <div className="grid gap-2">
+                            <Label>{t('admin.users.fields.roles')}</Label>
+                            <div className="border rounded-md p-4">
+                                <div className="space-y-3">
+                                    {roles.map((role) => (
+                                        <div key={role.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`role-${role.id}`}
+                                                checked={selectedRoles.includes(role.id)}
+                                                onCheckedChange={(checked) =>
+                                                    handleRoleChange(role.id, checked as boolean)
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`role-${role.id}`}
+                                                className="cursor-pointer font-normal flex items-center"
+                                            >
+                                                {role.name}
+                                                {role.description && (
+                                                    <span className="ml-2 text-sm text-gray-500">
+                                                        ({role.description})
+                                                    </span>
+                                                )}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <InputError message={errors.roles} />
+                        </div>
+
                         <div className="flex items-center gap-4">
                             <Button type="submit" disabled={processing}>{t('admin.users.actions.save')}</Button>
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => reset()}
+                                onClick={() => {
+                                    reset();
+                                    setSelectedRoles([]);
+                                }}
                                 disabled={processing}
                             >
                                 {t('admin.users.actions.reset')}

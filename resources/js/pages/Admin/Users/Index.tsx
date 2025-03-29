@@ -17,9 +17,36 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
-export default function Index({ users }) {
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+}
+
+interface UsersIndexProps {
+    users: {
+        data: User[];
+        from: number;
+        to: number;
+        total: number;
+        links: Array<{
+            url: string | null;
+            label: string;
+            active: boolean;
+        }>;
+    };
+    filters: {
+        search: string;
+    };
+}
+
+export default function Index({ users, filters }: UsersIndexProps) {
     const { t } = useTranslation();
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: t('admin.users.management'),
@@ -31,11 +58,22 @@ export default function Index({ users }) {
         },
     ];
 
-    const [deleteUserId, setDeleteUserId] = useState(null);
+    const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [recentlySuccessful, setRecentlySuccessful] = useState(false);
 
-    const confirmDelete = (userId) => {
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        router.get(
+            route('admin.users.index'),
+            { search: value },
+            { preserveState: true }
+        );
+    };
+
+    const confirmDelete = (userId: number) => {
         setDeleteUserId(userId);
         setIsDeleting(true);
     };
@@ -71,6 +109,19 @@ export default function Index({ users }) {
                         </Button>
                     </div>
 
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="relative w-full max-w-sm">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Input
+                                type="search"
+                                placeholder={t('admin.users.search_placeholder', { default: 'Kullanıcı ara...' })}
+                                className="pl-8"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
+                        </div>
+                    </div>
+
                     <div className="rounded-md border">
                         <div className="overflow-hidden">
                             <table className="w-full text-sm">
@@ -84,7 +135,7 @@ export default function Index({ users }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.data.map((user) => (
+                                    {users.data.map((user: User) => (
                                         <tr key={user.id} className="border-t">
                                             <td className="px-4 py-3">{user.id}</td>
                                             <td className="px-4 py-3 font-medium">{user.name}</td>
@@ -183,9 +234,8 @@ export default function Index({ users }) {
                     enterFrom="opacity-0"
                     leave="transition ease-in-out duration-300"
                     leaveTo="opacity-0"
-                    className="fixed bottom-4 right-4 z-50"
                 >
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <div className="fixed bottom-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                         <p>{t('admin.users.messages.deleted')}</p>
                     </div>
                 </Transition>

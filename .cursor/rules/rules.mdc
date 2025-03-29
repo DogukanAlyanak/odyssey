@@ -14,6 +14,7 @@ alwaysApply: true
 # Backend Proje Yapısı
 - kernel.php yok bootstrap/app.php içini oku ona göre yap.
 - config/app.php içini oku ona göre yap.
+- request methodlarından sadece get ve post kullan. put patch başka bişey kullanma
 
 
 # Frontend Yapısı

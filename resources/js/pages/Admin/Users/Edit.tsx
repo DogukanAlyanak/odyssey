@@ -1,6 +1,6 @@
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useEffect } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
 
 import AppLayout from '@/layouts/app-layout';
@@ -11,16 +11,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Transition } from '@headlessui/react';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from '@/components/ui/badge';
+
+interface Role {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+}
 
 type UserForm = {
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
+    roles: number[];
 }
 
-export default function Edit({ user }) {
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface EditProps {
+    user: User;
+    roles: Role[];
+    user_roles: number[];
+}
+
+export default function Edit({ user, roles, user_roles }: EditProps) {
     const { t } = useTranslation();
+    const [selectedRoles, setSelectedRoles] = useState<number[]>(user_roles);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: t('admin.users.management'),
@@ -41,7 +65,20 @@ export default function Edit({ user }) {
         email: user.email || '',
         password: '',
         password_confirmation: '',
+        roles: user_roles || [],
     });
+
+    const handleRoleChange = (roleId: number, checked: boolean) => {
+        if (checked) {
+            const newRoles = [...selectedRoles, roleId];
+            setSelectedRoles(newRoles);
+            setData('roles', newRoles);
+        } else {
+            const newRoles = selectedRoles.filter(id => id !== roleId);
+            setSelectedRoles(newRoles);
+            setData('roles', newRoles);
+        }
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -107,6 +144,37 @@ export default function Edit({ user }) {
                                 placeholder={t('admin.users.fields.password_confirmation')}
                             />
                             <InputError message={errors.password_confirmation} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label>{t('admin.users.fields.roles')}</Label>
+                            <div className="border rounded-md p-4">
+                                <div className="space-y-3">
+                                    {roles.map((role) => (
+                                        <div key={role.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`role-${role.id}`}
+                                                checked={selectedRoles.includes(role.id)}
+                                                onCheckedChange={(checked) =>
+                                                    handleRoleChange(role.id, checked as boolean)
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`role-${role.id}`}
+                                                className="cursor-pointer font-normal flex items-center"
+                                            >
+                                                {role.name}
+                                                {role.description && (
+                                                    <span className="ml-2 text-sm text-gray-500">
+                                                        ({role.description})
+                                                    </span>
+                                                )}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <InputError message={errors.roles} />
                         </div>
 
                         <div className="flex items-center gap-4">

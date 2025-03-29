@@ -1,7 +1,7 @@
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Users, UserPlus, UserCog, UserCheck } from 'lucide-react';
+import { Users, UserPlus, UserCog, UserCheck, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 
 const adminNavItems: NavItem[] = [
@@ -11,9 +11,9 @@ const adminNavItems: NavItem[] = [
         icon: Users,
     },
     {
-        title: 'admin.users.create',
-        href: '/admin/users/create',
-        icon: UserPlus,
+        title: 'admin.roles.title',
+        href: '/admin/roles',
+        icon: Shield,
     },
 ];
 
@@ -32,6 +32,15 @@ export function NavAdmin() {
         // "/admin/users/5/edit" gibi bir düzenleme sayfasında olduğumuzda
         // kullanıcı listesi menüsünü aktif gösterme işlevi
         if (href === "/admin/users" && page.url.match(/^\/admin\/users\/\d+\/edit$/)) {
+            return true;
+        }
+
+        // Rol sayfaları için aktif kontrolleri
+        if (href === "/admin/roles" && page.url.match(/^\/admin\/roles\/\d+$/)) {
+            return true;
+        }
+
+        if (href === "/admin/roles" && page.url.match(/^\/admin\/roles\/\d+\/edit$/)) {
             return true;
         }
 

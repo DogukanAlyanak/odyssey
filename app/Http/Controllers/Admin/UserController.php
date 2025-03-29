@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -14,12 +15,28 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('id', 'desc')->paginate(10);
+        $query = User::query();
+
+        // Arama parametresi varsa filtreleme yapılır
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $users = $query->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Users/Index', [
-            'users' => $users
+            'users' => $users,
+            'filters' => [
+                'search' => $request->search ?? '',
+            ],
         ]);
     }
 
@@ -28,7 +45,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Users/Create');
+        $roles = Role::all(['id', 'name', 'slug', 'description']);
+
+        return Inertia::render('Admin/Users/Create', [
+            'roles' => $roles
+        ]);
     }
 
     /**
@@ -40,14 +61,25 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['integer', 'exists:roles,id'],
         ]);
 
-        User::create([
+        // Rolleri form verilerinden ayır
+        $roles = $validated['roles'] ?? [];
+        unset($validated['roles']);
+
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'email_verified_at' => now(),
         ]);
+
+        // Kullanıcıya rolleri ekle
+        if (!empty($roles)) {
+            $user->roles()->sync($roles);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('message', trans('Kullanıcı başarıyla oluşturuldu.'));
@@ -68,8 +100,15 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $roles = Role::all(['id', 'name', 'slug', 'description']);
+        $user->load('roles');
+
+        $user_roles = $user->roles->pluck('id')->toArray();
+
         return Inertia::render('Admin/Users/Edit', [
-            'user' => $user
+            'user' => $user,
+            'user_roles' => $user_roles,
+            'roles' => $roles
         ]);
     }
 
@@ -82,7 +121,13 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['integer', 'exists:roles,id'],
         ]);
+
+        // Rolleri form verilerinden ayır
+        $roles = $validated['roles'] ?? [];
+        unset($validated['roles']);
 
         $userData = [
             'name' => $validated['name'],
@@ -94,6 +139,9 @@ class UserController extends Controller
         }
 
         $user->update($userData);
+
+        // Kullanıcının rollerini güncelle
+        $user->roles()->sync($roles);
 
         return redirect()->back()
             ->with('message', trans('Kullanıcı başarıyla güncellendi.'));

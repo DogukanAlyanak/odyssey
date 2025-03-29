@@ -31,6 +31,7 @@ return [
         'password' => 'Password',
         'cancel' => 'Cancel',
         'confirm_delete' => 'Delete User',
+        'search_placeholder' => 'Search user...',
         'fields' => [
             'name' => 'Name',
             'email' => 'Email Address',
@@ -40,6 +41,7 @@ return [
             'created_at' => 'Created At',
             'updated_at' => 'Last Update',
             'email_verified_at' => 'Email Verification',
+            'roles' => 'Roles',
         ],
         'actions' => [
             'title' => 'Actions',

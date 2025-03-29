@@ -20,16 +20,30 @@ class RoleController extends Controller
     /**
      * Rolleri listele
      */
-    public function index(): InertiaResponse
+    public function index(Request $request): InertiaResponse
     {
-        $roles = Role::query()
-            ->select(['id', 'slug', 'name', 'description', 'is_locked', 'created_at', 'updated_at'])
-            ->latest()
+        $query = Role::query()
+            ->select(['id', 'slug', 'name', 'description', 'is_locked', 'created_at', 'updated_at']);
+
+        // Arama parametresi varsa filtreleme yapılır
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhere('slug', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $roles = $query->latest()
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/roles/Index', [
             'roles' => $roles,
+            'filters' => [
+                'search' => $request->search ?? '',
+            ],
         ]);
     }
 
