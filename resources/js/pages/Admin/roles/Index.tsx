@@ -18,7 +18,7 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Transition } from '@headlessui/react';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Eye, Edit, Trash2, Search, Plus } from 'lucide-react';
 
 interface Role {
     id: number;
@@ -156,10 +156,7 @@ export default function Index({ roles }: RolesIndexProps) {
                                         <thead className="bg-muted/50">
                                             <tr className="text-left">
                                                 <th className="px-4 py-3 font-medium">{t('admin.roles.fields.display_name')}</th>
-                                                <th className="px-4 py-3 font-medium">{t('admin.roles.fields.name')}</th>
                                                 <th className="px-4 py-3 font-medium">{t('admin.roles.fields.description')}</th>
-                                                <th className="px-4 py-3 font-medium">{t('admin.roles.fields.users')}</th>
-                                                <th className="px-4 py-3 font-medium">{t('admin.roles.permissions')}</th>
                                                 <th className="px-4 py-3 font-medium text-right">{t('admin.roles.actions.title')}</th>
                                             </tr>
                                         </thead>
@@ -167,12 +164,9 @@ export default function Index({ roles }: RolesIndexProps) {
                                             {roles?.data?.map((role) => (
                                                 <tr key={role.id} className="border-t">
                                                     <td className="px-4 py-3 font-medium">{role.display_name}</td>
-                                                    <td className="px-4 py-3">{role.name}</td>
                                                     <td className="px-4 py-3 max-w-xs truncate">
                                                         {role.description || '-'}
                                                     </td>
-                                                    <td className="px-4 py-3">{role.users_count}</td>
-                                                    <td className="px-4 py-3">{role.permissions_count}</td>
                                                     <td className="px-4 py-3 text-right">
                                                         <div className="flex justify-end gap-2">
                                                             <Button
@@ -256,14 +250,22 @@ export default function Index({ roles }: RolesIndexProps) {
                             <DialogHeader>
                                 <DialogTitle>{t('admin.roles.messages.delete_confirm_title')}</DialogTitle>
                                 <DialogDescription>
-                                    {t('admin.roles.messages.delete_confirm_message')}
+                                    {roleToDelete && (
+                                        <div>
+                                            {t('admin.roles.messages.delete_confirm_message')}
+                                        </div>
+                                    )}
                                 </DialogDescription>
                             </DialogHeader>
-                            <DialogFooter className="flex gap-2 sm:justify-end">
+                            <DialogFooter>
                                 <Button type="button" variant="outline" onClick={cancelDelete}>
                                     {t('admin.roles.actions.cancel')}
                                 </Button>
-                                <Button type="button" variant="destructive" onClick={handleDelete}>
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={handleDelete}
+                                >
                                     {t('admin.roles.actions.delete')}
                                 </Button>
                             </DialogFooter>
@@ -272,14 +274,14 @@ export default function Index({ roles }: RolesIndexProps) {
 
                     <Transition
                         show={recentlySuccessful}
+                        enter="transition ease-in-out duration-300"
                         enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leaveFrom="opacity-100"
+                        leave="transition ease-in-out duration-300"
                         leaveTo="opacity-0"
                         className="fixed bottom-4 right-4 z-50"
                     >
-                        <div className="bg-green-500 text-white p-4 rounded-md shadow-lg">
-                            {t('admin.roles.messages.deleted')}
+                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                            <p>{t('admin.roles.messages.deleted')}</p>
                         </div>
                     </Transition>
                 </div>
