@@ -7,13 +7,13 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, variant = 'header' }: AppShellProps) {
-    const [isOpen, setIsOpen] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('sidebar') !== 'false' : true));
+    const [isOpen, setIsOpen] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('sidebarState') !== 'false' : true));
 
     const handleSidebarChange = (open: boolean) => {
         setIsOpen(open);
 
         if (typeof window !== 'undefined') {
-            localStorage.setItem('sidebar', String(open));
+            localStorage.setItem('sidebarState', String(open));
 
             // Eğer sidebar kapandıysa ve ekran mobil ise, body elementinden overflow hidden sınıfını kaldır
             if (!open && window.innerWidth < 768) {
