@@ -17,8 +17,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class);
+
+        // Rol yönetimi rotaları
+        Route::get('roles', function () {
+            return Inertia::render('admin/roles/index');
+        })->name('roles.index')->middleware('permission:view_role');
+
+        Route::get('roles/create', function () {
+            return Inertia::render('admin/roles/create');
+        })->name('roles.create')->middleware('permission:create_role');
+    });
+
+    // Editör rotaları
+    Route::prefix('editor')->name('editor.')->middleware('role:editor,admin')->group(function () {
+        Route::get('dashboard', function () {
+            return Inertia::render('editor/dashboard');
+        })->name('dashboard');
     });
 });
 

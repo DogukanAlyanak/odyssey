@@ -26,3 +26,5 @@ alwaysApply: true
 - react dosya isimleri bu projede küçük harfle başlıyor.
 - sayfa oluştururken veya düzenlerken dillere dikkat et. @resources/js/pages/settings/appearance.tsx dosyasındaki gibi dilleri ayarla.
 - dil ayarlarında const { t } = useTranslation(); olmalı t fonksiyonu . dan önce ilk dosya adı sonra arraya göre dili bulmalı.
+- laravel de Lang modeliyle değilde trans fonksiyonuyla dilleri entegre et.
+- textleri hiç bir zaman koddla kullanma hep dilleri entegre et.
