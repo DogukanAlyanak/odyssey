@@ -1,4 +1,4 @@
-import React, { FormEventHandler } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
@@ -32,6 +32,7 @@ export default function Create({ permissions = [] }: CreateProps) {
         description: '',
         permissions: [] as number[],
     });
+    const [error, setError] = useState<string | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -50,7 +51,14 @@ export default function Create({ permissions = [] }: CreateProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('admin.roles.store'));
+        setError(null);
+        post(route('admin.roles.store'), {
+            onError: (errors) => {
+                if (errors.error) {
+                    setError(errors.error);
+                }
+            }
+        });
     };
 
     function renderPermissionList() {
@@ -163,12 +171,24 @@ export default function Create({ permissions = [] }: CreateProps) {
                                             {t('admin.roles.actions.cancel')}
                                         </Link>
                                     </Button>
-                                    <Button
-                                        type="submit"
-                                        disabled={processing}
-                                    >
-                                        {t('admin.roles.actions.create')}
-                                    </Button>
+                                    <div className="flex items-center gap-4">
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error}
+                                            </p>
+                                        )}
+                                        {recentlySuccessful && (
+                                            <p className="text-sm text-green-600">
+                                                {t('admin.roles.messages.saved')}
+                                            </p>
+                                        )}
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                        >
+                                            {t('admin.roles.actions.create')}
+                                        </Button>
+                                    </div>
                                 </CardFooter>
                             </Card>
                         </form>

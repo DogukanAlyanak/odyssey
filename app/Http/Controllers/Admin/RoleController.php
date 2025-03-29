@@ -4,31 +4,27 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class RoleController extends Controller
 {
     /**
      * Rolleri listele
      */
-    public function index(): Response
+    public function index(): InertiaResponse
     {
         $roles = Role::query()
             ->select(['id', 'slug', 'name', 'description', 'is_locked', 'created_at', 'updated_at'])
             ->latest()
             ->paginate(10)
             ->withQueryString();
-
-        // Frontend'e localizedName ile gönderiyoruz
-        $roles->through(function ($role) {
-            $role->display_name = $role->localizedName;
-            return $role;
-        });
 
         return Inertia::render('Admin/roles/Index', [
             'roles' => $roles,
@@ -38,7 +34,7 @@ class RoleController extends Controller
     /**
      * Yeni rol oluşturma formunu göster
      */
-    public function create(): Response
+    public function create(): InertiaResponse
     {
         return Inertia::render('Admin/roles/Create');
     }
@@ -46,33 +42,38 @@ class RoleController extends Controller
     /**
      * Yeni rol oluştur
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'description' => 'nullable|string|max:1000',
         ]);
 
-        // Frontend'den display_name alıyoruz ama veritabanına kaydetmiyoruz
         // Slug'ı otomatik olarak isimden oluştur
         $validated['slug'] = Str::slug($validated['name']);
 
-        Role::create($validated);
+        $role = Role::create($validated);
 
-        return redirect()->route('admin.roles.index')
-            ->with('success', 'Rol başarıyla oluşturuldu.');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => trans('admin.roles.messages.saved'),
+                'role' => $role
+            ]);
+        }
+
+        return redirect()->route('admin.roles.edit', $role->id)
+            ->with('success', trans('admin.roles.messages.saved'));
     }
 
     /**
      * Rol detaylarını göster
      */
-    public function show(Role $role): Response
+    public function show(Role $role): InertiaResponse
     {
         $roleData = [
             'id' => $role->id,
             'name' => $role->name,
             'slug' => $role->slug,
-            'display_name' => $role->localizedName, // Accessor ile çeviriden geliyor
             'description' => $role->description,
             'is_locked' => $role->is_locked,
             'created_at' => $role->created_at,
@@ -87,13 +88,12 @@ class RoleController extends Controller
     /**
      * Rol düzenleme formunu göster
      */
-    public function edit(Role $role): Response
+    public function edit(Role $role): InertiaResponse
     {
         $roleData = [
             'id' => $role->id,
             'name' => $role->name,
             'slug' => $role->slug,
-            'display_name' => $role->localizedName, // Accessor ile çeviriden geliyor
             'description' => $role->description,
             'is_locked' => $role->is_locked,
         ];
@@ -106,11 +106,17 @@ class RoleController extends Controller
     /**
      * Rolü güncelle
      */
-    public function update(Request $request, Role $role): RedirectResponse
+    public function update(Request $request, Role $role): JsonResponse|RedirectResponse
     {
         // Eğer rol kilitli ise güncelleme işlemini engelle
         if ($role->isLocked()) {
-            return back()->withErrors(['error' => 'Bu rol sistem tarafından kilitlenmiş ve düzenlenemez.']);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => trans('admin.roles.locked_role_description')
+                ], 403);
+            }
+
+            return back()->withErrors(['error' => trans('admin.roles.locked_role_description')]);
         }
 
         $validated = $request->validate([
@@ -123,24 +129,36 @@ class RoleController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        // Frontend'den display_name alıyoruz ama veritabanına kaydetmiyoruz
         // Slug'ı otomatik olarak isimden oluştur
         $validated['slug'] = Str::slug($validated['name']);
 
         $role->update($validated);
 
-        return redirect()->route('admin.roles.index')
-            ->with('success', 'Rol başarıyla güncellendi.');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => trans('admin.roles.messages.updated'),
+                'role' => $role
+            ]);
+        }
+
+        return redirect()->back()->withInput()
+            ->with('success', trans('admin.roles.messages.updated'));
     }
 
     /**
      * Rolü sil
      */
-    public function destroy(Role $role): RedirectResponse
+    public function destroy(Request $request, Role $role): JsonResponse|RedirectResponse
     {
         // Eğer rol kilitli ise silme işlemini engelle
         if ($role->isLocked()) {
-            return back()->withErrors(['error' => 'Bu rol sistem tarafından kilitlenmiş ve silinemez.']);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => trans('admin.roles.locked_role_description')
+                ], 403);
+            }
+
+            return back()->withErrors(['error' => trans('admin.roles.locked_role_description')]);
         }
 
         // Rol ile kullanıcı ve izin ilişkilerini temizle
@@ -149,7 +167,13 @@ class RoleController extends Controller
 
         $role->delete();
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => trans('admin.roles.messages.deleted')
+            ]);
+        }
+
         return redirect()->route('admin.roles.index')
-            ->with('success', 'Rol başarıyla silindi.');
+            ->with('success', trans('admin.roles.messages.deleted'));
     }
 }

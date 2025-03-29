@@ -112,12 +112,10 @@ class Role extends Model
     }
 
     /**
-     * Rol adının çevirisini döndürür
+     * Frontend için is_locked değerini boolean olarak döndürür
      */
-    public function getLocalizedNameAttribute(): string
+    protected function getIsLockedForFrontAttribute(): bool
     {
-        return Lang::has("permissions.roles.{$this->slug}") ?
-            Lang::get("permissions.roles.{$this->slug}") :
-            $this->name;
+        return $this->isLocked();
     }
 }

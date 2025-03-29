@@ -27,3 +27,6 @@ alwaysApply: true
 - dil ayarlarında const { t } = useTranslation(); olmalı t fonksiyonu . dan önce ilk dosya adı sonra arraya göre dili bulmalı.
 - laravel de Lang modeliyle değilde trans fonksiyonuyla dilleri entegre et.
 - textleri hiç bir zaman koddla kullanma hep dilleri entegre et.
+
+# proje için gerekli kurallar
+- is_locked === 1 kontrolünü basit is_locked kontrolüyle değiştirme.

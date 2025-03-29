@@ -26,7 +26,6 @@ interface Permission {
 interface Role {
     id: number;
     name: string;
-    display_name: string;
     description: string;
     is_locked: boolean;
     permissions: Permission[];
@@ -44,6 +43,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
         description: role?.description || '',
         permissions: role?.permissions?.map(permission => permission.id) || [],
     });
+    const [error, setError] = useState<string | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -55,7 +55,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
             href: '/admin/roles',
         },
         {
-            title: role?.display_name || '',
+            title: role?.name || '',
             href: `/admin/roles/${role?.id}`,
         },
         {
@@ -66,8 +66,15 @@ export default function Edit({ role, permissions = [] }: EditProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        setError(null);
         if (role?.id) {
-            put(route('admin.roles.update', role.id));
+            put(route('admin.roles.update', role.id), {
+                onError: (errors) => {
+                    if (errors.error) {
+                        setError(errors.error);
+                    }
+                }
+            });
         }
     };
 
@@ -189,12 +196,24 @@ export default function Edit({ role, permissions = [] }: EditProps) {
                                             {t('admin.roles.actions.cancel')}
                                         </Link>
                                     </Button>
-                                    <Button
-                                        type="submit"
-                                        disabled={processing}
-                                    >
-                                        {t('admin.roles.actions.save')}
-                                    </Button>
+                                    <div className="flex items-center gap-4">
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error}
+                                            </p>
+                                        )}
+                                        {recentlySuccessful && (
+                                            <p className="text-sm text-green-600">
+                                                {t('admin.roles.messages.updated')}
+                                            </p>
+                                        )}
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                        >
+                                            {t('admin.roles.actions.save')}
+                                        </Button>
+                                    </div>
                                 </CardFooter>
                             </Card>
                         </form>

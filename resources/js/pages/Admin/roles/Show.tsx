@@ -68,7 +68,6 @@ interface User {
 interface Role {
     id: number;
     name: string;
-    display_name: string;
     description: string;
     is_locked: boolean;
     permissions: Permission[];
@@ -183,7 +182,7 @@ export default function Show({ role }: ShowProps) {
                             description={t('admin.roles.view_role_details')}
                         />
                         <div className="flex gap-2">
-                            {!role.is_locked && (
+                            {role.is_locked !== 1 && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
@@ -226,7 +225,7 @@ export default function Show({ role }: ShowProps) {
                             </Button>
                         </div>
                     </div>
-                    {role.is_locked && (
+                    {role.is_locked === 1 && (
                         <Alert variant="warning">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>{t('admin.roles.locked_role_title')}</AlertTitle>
@@ -251,7 +250,7 @@ export default function Show({ role }: ShowProps) {
                                         <div>
                                             <h3 className="text-sm font-medium text-gray-500">{t('admin.roles.fields.status')}</h3>
                                             <div className="mt-1">
-                                                {role.is_locked ? (
+                                                {role.is_locked === 1 ? (
                                                     <Badge variant="destructive">{t('admin.roles.locked')}</Badge>
                                                 ) : (
                                                     <Badge variant="outline">{t('admin.roles.editable')}</Badge>

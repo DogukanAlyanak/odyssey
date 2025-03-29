@@ -23,7 +23,6 @@ import { Eye, Edit, Trash2, Search, Plus } from 'lucide-react';
 interface Role {
     id: number;
     name: string;
-    display_name: string;
     description: string;
     is_locked: boolean;
     permissions_count: number;
@@ -189,7 +188,7 @@ export default function Index({ roles }: RolesIndexProps) {
                                                                     {t('admin.roles.actions.edit')}
                                                                 </Link>
                                                             </Button>
-                                                            {!role.is_locked && (
+                                                            {role.is_locked !== 1 && (
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
