@@ -1,7 +1,7 @@
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Users, UserPlus, UserCog, UserCheck, Shield } from 'lucide-react';
+import { Users, UserPlus, UserCog, UserCheck, Shield, Building2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 
 const adminNavItems: NavItem[] = [
@@ -14,6 +14,11 @@ const adminNavItems: NavItem[] = [
         title: 'admin.roles.title',
         href: '/admin/roles',
         icon: Shield,
+    },
+    {
+        title: 'admin.companies.title',
+        href: '/admin/companies',
+        icon: Building2,
     },
 ];
 
@@ -41,6 +46,15 @@ export function NavAdmin() {
         }
 
         if (href === "/admin/roles" && page.url.match(/^\/admin\/roles\/\d+\/edit$/)) {
+            return true;
+        }
+
+        // Şirket sayfaları için aktif kontrolleri
+        if (href === "/admin/companies" && page.url.match(/^\/admin\/companies\/\d+$/)) {
+            return true;
+        }
+
+        if (href === "/admin/companies" && page.url.match(/^\/admin\/companies\/\d+\/edit$/)) {
             return true;
         }
 

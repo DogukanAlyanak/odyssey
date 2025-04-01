@@ -6,27 +6,38 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
+import { Building2, Shield, ShieldPlus, User, UserPlus } from 'lucide-react';
 
-const sidebarNavItems = (t): NavItem[] => [
+const sidebarNavItems = (t: (key: string) => string): NavItem[] => [
     {
         title: t('admin.sidebar.users'),
         href: '/admin/users',
-        icon: 'user',
+        icon: User,
     },
     {
         title: t('admin.sidebar.new_user'),
         href: '/admin/users/create',
-        icon: 'user-plus',
+        icon: UserPlus,
     },
     {
         title: t('admin.sidebar.roles'),
         href: '/admin/roles',
-        icon: 'shield',
+        icon: Shield,
     },
     {
         title: t('admin.sidebar.new_role'),
         href: '/admin/roles/create',
-        icon: 'shield-plus',
+        icon: ShieldPlus,
+    },
+    {
+        title: t('admin.sidebar.companies'),
+        href: '/admin/companies',
+        icon: Building2,
+    },
+    {
+        title: t('admin.sidebar.new_company'),
+        href: '/admin/companies/create',
+        icon: Building2,
     },
 ];
 
@@ -59,10 +70,13 @@ export default function AdminLayout({ children }: PropsWithChildren) {
                                     (item.href === '/admin/users' && currentPath.match(/^\/admin\/users\/\d+$/)) ||
                                     (item.href === '/admin/users' && currentPath.match(/^\/admin\/users\/\d+\/edit$/)) ||
                                     (item.href === '/admin/roles' && currentPath.match(/^\/admin\/roles\/\d+$/)) ||
-                                    (item.href === '/admin/roles' && currentPath.match(/^\/admin\/roles\/\d+\/edit$/)),
+                                    (item.href === '/admin/roles' && currentPath.match(/^\/admin\/roles\/\d+\/edit$/)) ||
+                                    (item.href === '/admin/companies' && currentPath.match(/^\/admin\/companies\/\d+$/)) ||
+                                    (item.href === '/admin/companies' && currentPath.match(/^\/admin\/companies\/\d+\/edit$/)),
                                 })}
                             >
                                 <Link href={item.href} prefetch>
+                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                                     {item.title}
                                 </Link>
                             </Button>
