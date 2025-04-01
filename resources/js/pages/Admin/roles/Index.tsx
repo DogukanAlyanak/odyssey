@@ -18,7 +18,13 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Transition } from '@headlessui/react';
 import { Input } from '@/components/ui/input';
-import { Eye, Edit, Trash2, Search, Plus } from 'lucide-react';
+import { Eye, Edit, Trash2, Search, Plus, MoreHorizontal } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Role {
     id: number;
@@ -172,38 +178,40 @@ export default function Index({ roles, filters }: RolesIndexProps) {
                                                         {role.description || '-'}
                                                     </td>
                                                     <td className="px-4 py-3 text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                asChild
-                                                                className="h-8 px-2"
-                                                            >
-                                                                <Link href={route('admin.roles.show', role.id)}>
-                                                                    {t('admin.roles.actions.view')}
-                                                                </Link>
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                asChild
-                                                                className="h-8 px-2"
-                                                            >
-                                                                <Link href={route('admin.roles.edit', role.id)}>
-                                                                    {t('admin.roles.actions.edit')}
-                                                                </Link>
-                                                            </Button>
-                                                            {role.is_locked !== 1 && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="h-8 px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                                                    onClick={() => confirmDelete(role)}
+                                                                    className="h-8 w-8 p-0"
                                                                 >
-                                                                    {t('admin.roles.actions.delete')}
+                                                                    <MoreHorizontal className="h-4 w-4" />
                                                                 </Button>
-                                                            )}
-                                                        </div>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={route('admin.roles.show', role.id)}>
+                                                                        <Eye className="mr-2 h-4 w-4" />
+                                                                        {t('admin.roles.actions.view')}
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={route('admin.roles.edit', role.id)}>
+                                                                        <Edit className="mr-2 h-4 w-4" />
+                                                                        {t('admin.roles.actions.edit')}
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                {role.is_locked !== 1 && (
+                                                                    <DropdownMenuItem
+                                                                        className="text-red-500 focus:text-red-500"
+                                                                        onClick={() => confirmDelete(role)}
+                                                                    >
+                                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                                        {t('admin.roles.actions.delete')}
+                                                                    </DropdownMenuItem>
+                                                                )}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
                                                     </td>
                                                 </tr>
                                             ))}

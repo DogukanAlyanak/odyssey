@@ -18,7 +18,13 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, Eye, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface User {
     id: number;
@@ -142,36 +148,38 @@ export default function Index({ users, filters }: UsersIndexProps) {
                                             <td className="px-4 py-3">{user.email}</td>
                                             <td className="px-4 py-3">{new Date(user.created_at).toLocaleDateString('tr-TR')}</td>
                                             <td className="px-4 py-3 text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        asChild
-                                                        className="h-8 px-2"
-                                                    >
-                                                        <Link href={route('admin.users.show', user.id)}>
-                                                            {t('admin.users.actions.view')}
-                                                        </Link>
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        asChild
-                                                        className="h-8 px-2"
-                                                    >
-                                                        <Link href={route('admin.users.edit', user.id)}>
-                                                            {t('admin.users.actions.edit')}
-                                                        </Link>
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="h-8 px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                                        onClick={() => confirmDelete(user.id)}
-                                                    >
-                                                        {t('admin.users.actions.delete')}
-                                                    </Button>
-                                                </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 w-8 p-0"
+                                                        >
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('admin.users.show', user.id)}>
+                                                                <Eye className="mr-2 h-4 w-4" />
+                                                                {t('admin.users.actions.view')}
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('admin.users.edit', user.id)}>
+                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                {t('admin.users.actions.edit')}
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-red-500 focus:text-red-500"
+                                                            onClick={() => confirmDelete(user.id)}
+                                                        >
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            {t('admin.users.actions.delete')}
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </td>
                                         </tr>
                                     ))}
