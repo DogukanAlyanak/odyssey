@@ -30,7 +30,7 @@ export default function Show({ user }) {
             <Head title={user.name} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall title={t('admin.users.user_details')} description={t('admin.users.view_user')} />
                         <div className="flex gap-2">

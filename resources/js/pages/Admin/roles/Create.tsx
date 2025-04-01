@@ -102,7 +102,7 @@ export default function Create({ permissions = [] }: CreateProps) {
             <Head title={t('admin.roles.new_role')} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
                             title={t('admin.roles.new_role')}

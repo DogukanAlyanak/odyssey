@@ -83,7 +83,7 @@ export default function Create({ roles }: CreateProps) {
             <Head title={t('admin.users.new_user')} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <HeadingSmall title={t('admin.users.new_user')} description={t('admin.users.add_new_user')} />
 
                     <form onSubmit={submit} className="space-y-6">

@@ -175,7 +175,7 @@ export default function Show({ role }: ShowProps) {
             <Head title={role.name || ''} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
                             title={t('admin.roles.role_details')}

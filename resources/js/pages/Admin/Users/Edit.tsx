@@ -91,7 +91,7 @@ export default function Edit({ user, roles, user_roles }: EditProps) {
             <Head title={`${user.name} ${t('admin.users.edit_user')}`} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <HeadingSmall title={t('admin.users.edit_user')} description={t('admin.users.update_user')} />
 
                     <form onSubmit={submit} className="space-y-6">

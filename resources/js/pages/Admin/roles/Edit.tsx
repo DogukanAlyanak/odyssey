@@ -175,7 +175,7 @@ export default function Edit({ role, permissions = [] }: EditProps) {
             <Head title={t('admin.roles.actions.edit')} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
                             title={t('admin.roles.actions.edit')}
