@@ -67,11 +67,16 @@ return [
     ],
     'verify_email' => [
         'title' => 'E-posta Doğrulama',
-        'description' => 'E-posta adresinizi doğrulamak için size bir doğrulama bağlantısı gönderdik.',
-        'messages' => [
-            'sent' => 'Yeni bir doğrulama bağlantısı gönderildi.',
-            'resend' => 'Başka bir doğrulama bağlantısı gönder',
-        ],
+        'description' => 'Kayıt olduğunuz için teşekkürler! Başlamadan önce, size az önce e-posta ile gönderdiğimiz bağlantıya tıklayarak e-posta adresinizi doğrulayabilir misiniz?',
+        'verification_link_sent' => 'Yeni bir doğrulama bağlantısı e-posta adresinize gönderildi.',
+        'resend_button' => 'Doğrulama Bağlantısını Yeniden Gönder',
+        'logout_button' => 'Çıkış Yap',
+        'subject' => 'E-posta Adresinizi Doğrulayın',
+        'greeting' => 'Merhaba :name,',
+        'thanks' => 'Hesabınızı oluşturduğunuz için teşekkür ederiz. Lütfen aşağıdaki butona tıklayarak e-posta adresinizi doğrulayın.',
+        'action' => 'E-posta Adresimi Doğrula',
+        'no_action' => 'Eğer hesap oluşturmadıysanız, başka bir işlem yapmanıza gerek yoktur.',
+        'footer' => 'Bu e-posta :app_name tarafından gönderilmiştir.',
     ],
     'confirm_password' => [
         'title' => 'Şifre Onayı',

@@ -72,6 +72,12 @@ return [
             'sent' => 'A new verification link has been sent.',
             'resend' => 'Resend verification link',
         ],
+        'subject' => 'Verify Email Address',
+        'greeting' => 'Hello :name,',
+        'thanks' => 'Thanks for creating an account. Please click the button below to verify your email address.',
+        'action' => 'Verify Email Address',
+        'no_action' => 'If you did not create an account, no further action is required.',
+        'footer' => 'This email was sent by :app_name.',
     ],
     'confirm_password' => [
         'title' => 'Confirm Password',
