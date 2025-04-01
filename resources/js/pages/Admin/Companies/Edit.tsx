@@ -1,6 +1,8 @@
 import { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
+import { useEffect } from 'react';
+import { slugify } from '@/lib/utils';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -11,34 +13,40 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import InputError from '@/components/input-error';
-
-interface Company {
-    id: number;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    address: string | null;
-    website: string | null;
-    description: string | null;
-    is_active: boolean;
-}
+import { useToast } from '@/components/ui/use-toast';
 
 interface EditProps {
-    company: Company;
+    company: {
+        id: number;
+        name: string;
+        slug: string;
+        email: string;
+        phone: string;
+        address: string;
+        website: string;
+        description: string;
+        is_active: boolean;
+    };
     errors: Record<string, string>;
 }
 
 export default function Edit({ company, errors }: EditProps) {
     const { t } = useTranslation();
+    const { toast } = useToast();
     const { data, setData, put, processing } = useForm({
         name: company.name,
-        email: company.email || '',
-        phone: company.phone || '',
-        address: company.address || '',
-        website: company.website || '',
-        description: company.description || '',
+        slug: company.slug,
+        email: company.email,
+        phone: company.phone,
+        address: company.address,
+        website: company.website,
+        description: company.description,
         is_active: company.is_active,
     });
+
+    useEffect(() => {
+        setData('slug', slugify(data.name));
+    }, [data.name]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -57,7 +65,21 @@ export default function Edit({ company, errors }: EditProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('admin.companies.update', company.id));
+        put(route('admin.companies.update', company.id), {
+            onSuccess: () => {
+                toast({
+                    title: t('admin.companies.messages.updated'),
+                    description: t('admin.companies.messages.update_success'),
+                });
+            },
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: t('admin.companies.messages.error'),
+                    description: t('admin.companies.messages.error_description'),
+                });
+            },
+        });
     };
 
     return (
@@ -73,8 +95,8 @@ export default function Edit({ company, errors }: EditProps) {
                         />
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid gap-6">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
                                 <Label htmlFor="name">{t('admin.companies.fields.name')}</Label>
                                 <Input
@@ -83,7 +105,18 @@ export default function Edit({ company, errors }: EditProps) {
                                     onChange={e => setData('name', e.target.value)}
                                     required
                                 />
-                                <InputError message={errors.name} className="mt-2" />
+                                {errors.name && <InputError message={errors.name} />}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="slug">{t('admin.companies.fields.slug')}</Label>
+                                <Input
+                                    id="slug"
+                                    value={data.slug}
+                                    onChange={e => setData('slug', e.target.value)}
+                                    required
+                                />
+                                {errors.slug && <InputError message={errors.slug} />}
                             </div>
 
                             <div className="space-y-2">
@@ -94,27 +127,18 @@ export default function Edit({ company, errors }: EditProps) {
                                     value={data.email}
                                     onChange={e => setData('email', e.target.value)}
                                 />
-                                <InputError message={errors.email} className="mt-2" />
+                                {errors.email && <InputError message={errors.email} />}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="phone">{t('admin.companies.fields.phone')}</Label>
                                 <Input
                                     id="phone"
+                                    type="tel"
                                     value={data.phone}
                                     onChange={e => setData('phone', e.target.value)}
                                 />
-                                <InputError message={errors.phone} className="mt-2" />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="address">{t('admin.companies.fields.address')}</Label>
-                                <Input
-                                    id="address"
-                                    value={data.address}
-                                    onChange={e => setData('address', e.target.value)}
-                                />
-                                <InputError message={errors.address} className="mt-2" />
+                                {errors.phone && <InputError message={errors.phone} />}
                             </div>
 
                             <div className="space-y-2">
@@ -125,38 +149,46 @@ export default function Edit({ company, errors }: EditProps) {
                                     value={data.website}
                                     onChange={e => setData('website', e.target.value)}
                                 />
-                                <InputError message={errors.website} className="mt-2" />
+                                {errors.website && <InputError message={errors.website} />}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">{t('admin.companies.fields.description')}</Label>
-                                <Textarea
-                                    id="description"
-                                    value={data.description}
-                                    onChange={e => setData('description', e.target.value)}
+                                <Label htmlFor="address">{t('admin.companies.fields.address')}</Label>
+                                <Input
+                                    id="address"
+                                    value={data.address}
+                                    onChange={e => setData('address', e.target.value)}
                                 />
-                                <InputError message={errors.description} className="mt-2" />
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                <Switch
-                                    id="is_active"
-                                    checked={data.is_active}
-                                    onCheckedChange={checked => setData('is_active', checked)}
-                                />
-                                <Label htmlFor="is_active">{t('admin.companies.fields.status')}</Label>
+                                {errors.address && <InputError message={errors.address} />}
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="description">{t('admin.companies.fields.description')}</Label>
+                            <Textarea
+                                id="description"
+                                value={data.description}
+                                onChange={e => setData('description', e.target.value)}
+                                rows={4}
+                            />
+                            {errors.description && <InputError message={errors.description} />}
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                id="is_active"
+                                checked={data.is_active}
+                                onCheckedChange={checked => setData('is_active', checked)}
+                            />
+                            <Label htmlFor="is_active">{t('admin.companies.fields.is_active')}</Label>
+                            {errors.is_active && <InputError message={errors.is_active} />}
+                        </div>
+
+                        <div className="flex justify-end gap-2">
                             <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => window.history.back()}
+                                type="submit"
+                                disabled={processing}
                             >
-                                {t('admin.companies.actions.cancel')}
-                            </Button>
-                            <Button type="submit" disabled={processing}>
                                 {t('admin.companies.actions.update')}
                             </Button>
                         </div>

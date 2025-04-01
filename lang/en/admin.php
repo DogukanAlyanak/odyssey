@@ -134,12 +134,14 @@ return [
         'search_placeholder' => 'Search companies...',
         'fields' => [
             'name' => 'Company Name',
+            'slug' => 'SEO URL',
             'email' => 'Email',
             'phone' => 'Phone',
             'address' => 'Address',
             'website' => 'Website',
             'description' => 'Description',
             'status' => 'Status',
+            'is_active' => 'Active/Inactive',
         ],
         'status' => [
             'active' => 'Active',

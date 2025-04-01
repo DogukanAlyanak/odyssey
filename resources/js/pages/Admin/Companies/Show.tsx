@@ -6,25 +6,23 @@ import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Mail, Phone, MapPin, Globe, FileText } from 'lucide-react';
-
-interface Company {
-    id: number;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    address: string | null;
-    website: string | null;
-    description: string | null;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ShowProps {
-    company: Company;
+    company: {
+        id: number;
+        name: string;
+        slug: string;
+        email: string;
+        phone: string;
+        address: string;
+        website: string;
+        description: string;
+        is_active: boolean;
+        created_at: string;
+        updated_at: string;
+    };
 }
 
 export default function Show({ company }: ShowProps) {
@@ -56,108 +54,134 @@ export default function Show({ company }: ShowProps) {
                             title={company.name}
                             description={t('admin.companies.company_details')}
                         />
-
                         <div className="flex gap-2">
-                            <Button variant="outline" asChild>
-                                <Link href={route('admin.companies.edit', company.id)}>
+                            <Link href={route('admin.companies.edit', company.id)}>
+                                <Button variant="outline">
                                     {t('admin.companies.actions.edit')}
-                                </Link>
-                            </Button>
-                            <Button asChild>
-                                <Link href={route('admin.companies.index')}>
+                                </Button>
+                            </Link>
+                            <Link href={route('admin.companies.index')}>
+                                <Button variant="outline">
                                     {t('admin.companies.actions.back')}
-                                </Link>
-                            </Button>
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
-                    <div className="grid gap-6">
+                    <div className="grid gap-4 md:grid-cols-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Building2 className="h-5 w-5" />
-                                    {t('admin.companies.fields.name')}
-                                </CardTitle>
+                                <CardTitle>{t('admin.companies.fields.general_info')}</CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm text-muted-foreground">{company.name}</p>
-                                    <Badge variant={company.is_active ? "success" : "destructive"}>
-                                        {company.is_active
-                                            ? t('admin.companies.status.active')
-                                            : t('admin.companies.status.inactive')}
-                                    </Badge>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.name')}
+                                    </h4>
+                                    <p className="mt-1">{company.name}</p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.slug')}
+                                    </h4>
+                                    <p className="mt-1">{company.slug}</p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.status')}
+                                    </h4>
+                                    <div className="mt-1">
+                                        <Badge variant={company.is_active ? 'default' : 'secondary'}>
+                                            {t(`admin.companies.status.${company.is_active ? 'active' : 'inactive'}`)}
+                                        </Badge>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
 
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Mail className="h-5 w-5" />
-                                    {t('admin.companies.fields.email')}
-                                </CardTitle>
+                                <CardTitle>{t('admin.companies.fields.contact_info')}</CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">
-                                    {company.email || t('admin.companies.no_data')}
-                                </p>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.email')}
+                                    </h4>
+                                    <p className="mt-1">{company.email || t('admin.companies.no_data')}</p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.phone')}
+                                    </h4>
+                                    <p className="mt-1">{company.phone || t('admin.companies.no_data')}</p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.website')}
+                                    </h4>
+                                    <p className="mt-1">
+                                        {company.website ? (
+                                            <a
+                                                href={company.website}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary hover:underline"
+                                            >
+                                                {company.website}
+                                            </a>
+                                        ) : (
+                                            t('admin.companies.no_data')
+                                        )}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.address')}
+                                    </h4>
+                                    <p className="mt-1">{company.address || t('admin.companies.no_data')}</p>
+                                </div>
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="md:col-span-2">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Phone className="h-5 w-5" />
-                                    {t('admin.companies.fields.phone')}
-                                </CardTitle>
+                                <CardTitle>{t('admin.companies.fields.description')}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-muted-foreground">
-                                    {company.phone || t('admin.companies.no_data')}
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <MapPin className="h-5 w-5" />
-                                    {t('admin.companies.fields.address')}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">
-                                    {company.address || t('admin.companies.no_data')}
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Globe className="h-5 w-5" />
-                                    {t('admin.companies.fields.website')}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">
-                                    {company.website || t('admin.companies.no_data')}
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
-                                    {t('admin.companies.fields.description')}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                <p className="whitespace-pre-wrap">
                                     {company.description || t('admin.companies.no_data')}
                                 </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="md:col-span-2">
+                            <CardHeader>
+                                <CardTitle>{t('admin.companies.fields.timestamps')}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.created_at')}
+                                    </h4>
+                                    <p className="mt-1">
+                                        {new Date(company.created_at).toLocaleString('tr-TR')}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        {t('admin.companies.fields.updated_at')}
+                                    </h4>
+                                    <p className="mt-1">
+                                        {new Date(company.updated_at).toLocaleString('tr-TR')}
+                                    </p>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

@@ -7,16 +7,19 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class CompanyController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->input('search');
         $companies = Company::query()
-            ->when($request->search, function ($query, $search) {
+            ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(10)
@@ -37,6 +40,7 @@ class CompanyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:companies,slug',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
@@ -45,10 +49,10 @@ class CompanyController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Company::create($validated);
+        $company = Company::create($validated);
 
-        return redirect()->route('admin.companies.index')
-            ->with('success', 'Şirket başarıyla oluşturuldu.');
+        return redirect()->route('admin.companies.edit', $company)
+            ->with('success', trans('admin.companies.messages.created'));
     }
 
     public function show(Company $company)
@@ -69,6 +73,7 @@ class CompanyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:companies,slug,' . $company->id,
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
@@ -79,8 +84,7 @@ class CompanyController extends Controller
 
         $company->update($validated);
 
-        return redirect()->route('admin.companies.index')
-            ->with('success', 'Şirket başarıyla güncellendi.');
+        return back()->with('success', trans('admin.companies.messages.updated'));
     }
 
     public function destroy(Company $company)
@@ -88,6 +92,6 @@ class CompanyController extends Controller
         $company->delete();
 
         return redirect()->route('admin.companies.index')
-            ->with('success', 'Şirket başarıyla silindi.');
+            ->with('success', trans('admin.companies.messages.deleted'));
     }
 }
