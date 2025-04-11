@@ -48,7 +48,7 @@ export default function Show({ company }: ShowProps) {
             <Head title={company.name} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
                             title={company.name}

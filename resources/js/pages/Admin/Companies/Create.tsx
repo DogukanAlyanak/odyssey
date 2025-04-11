@@ -76,7 +76,7 @@ export default function Create({ errors }: CreateProps) {
             <Head title={t('admin.companies.new_company')} />
 
             <AdminLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-2xl">
                     <div className="flex justify-between items-center">
                         <HeadingSmall
                             title={t('admin.companies.new_company')}
