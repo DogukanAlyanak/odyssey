@@ -88,4 +88,9 @@ return [
             'confirm' => 'Onayla',
         ],
     ],
+    'failed' => 'Bu kimlik bilgileri kayıtlarımızla eşleşmiyor.',
+    'password' => 'Belirtilen şifre yanlış.',
+    'throttle' => 'Çok fazla giriş denemesi. Lütfen :seconds saniye sonra tekrar deneyin.',
+    'team_members' => 'Takım Üyeleri',
+    'you' => 'Siz',
 ];
