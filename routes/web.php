@@ -14,6 +14,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
@@ -24,13 +25,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('companies', CompanyController::class);
         Route::get('search-users', [CompanyController::class, 'searchUsers'])->name('search.users');
-    });
-
-    // Editör rotaları
-    Route::prefix('editor')->name('editor.')->middleware('role:editor,admin')->group(function () {
-        Route::get('dashboard', function () {
-            return Inertia::render('editor/dashboard');
-        })->name('dashboard');
     });
 });
 

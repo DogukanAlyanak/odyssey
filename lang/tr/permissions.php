@@ -15,7 +15,7 @@ return [
         'admin' => 'Yönetici',
         'user' => 'Kullanıcı',
         'manager' => 'Müdür',
-        'editor' => 'Editör',
+        'member' => 'Üye',
     ],
     'permissions' => [
         'create_user' => [

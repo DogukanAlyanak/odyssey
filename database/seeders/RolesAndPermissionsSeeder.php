@@ -8,7 +8,6 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Lang;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -51,6 +50,20 @@ class RolesAndPermissionsSeeder extends Seeder
             'is_locked' => BooleanStatus::TRUE->value
         ]);
 
+        $agentRole = Role::create([
+            'name' => 'Agent',
+            'slug' => 'agent',
+            'description' => 'Agent kullanıcı',
+            'is_locked' => BooleanStatus::FALSE->value
+        ]);
+
+        $memberRole = Role::create([
+            'name' => 'Üye',
+            'slug' => 'member',
+            'description' => 'Üye kullanıcı',
+            'is_locked' => BooleanStatus::FALSE->value
+        ]);
+
         $userRole = Role::create([
             'name' => 'Kullanıcı',
             'slug' => 'user',
@@ -58,16 +71,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'is_locked' => BooleanStatus::TRUE->value
         ]);
 
-        $editorRole = Role::create([
-            'name' => 'Editör',
-            'slug' => 'editor',
-            'description' => 'İçerik oluşturma ve düzenleme yetkisine sahip kullanıcı',
-            'is_locked' => BooleanStatus::FALSE->value
-        ]);
-
         // Rollere izinleri ekle
-        $editorRole->givePermissionTo($permissionModels['view_user']);
-        $editorRole->givePermissionTo($permissionModels['view_role']);
+        $agentRole->givePermissionTo($permissionModels['view_user']);
+        $agentRole->givePermissionTo($permissionModels['view_role']);
+        $agentRole->givePermissionTo($permissionModels['create_user']);
+        $agentRole->givePermissionTo($permissionModels['edit_user']);
+        $agentRole->givePermissionTo($permissionModels['delete_user']);
 
         // Demo admin kullanıcısı oluştur
         $adminUser = User::firstOrCreate(
@@ -79,11 +88,31 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
 
-        // Demo editor kullanıcısı oluştur
-        $editorUser = User::firstOrCreate(
-            ['email' => 'editor@test.com'],
+        // Demo agent kullanıcısı oluştur
+        $agentUser = User::firstOrCreate(
+            ['email' => 'agent@test.com'],
             [
-                'name' => 'Editor User',
+                'name' => 'Agent User',
+                'password' => Hash::make('Admin-1122'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Demo üye kullanıcısı oluştur
+        $memberUser = User::firstOrCreate(
+            ['email' => 'member@test.com'],
+            [
+                'name' => 'Member User',
+                'password' => Hash::make('Admin-1122'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Demo kullanıcı kullanıcısı oluştur
+        $userUser = User::firstOrCreate(
+            ['email' => 'user@test.com'],
+            [
+                'name' => 'User User',
                 'password' => Hash::make('Admin-1122'),
                 'email_verified_at' => now(),
             ]
@@ -91,6 +120,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Kullanıcılara rolleri ata
         $adminUser->assignRole($adminRole);
-        $editorUser->assignRole($editorRole);
+        $agentUser->assignRole($agentRole);
+        $memberUser->assignRole($memberRole);
+        $userUser->assignRole($userRole);
     }
 }

@@ -15,7 +15,7 @@ return [
         'admin' => 'Administrator',
         'user' => 'User',
         'manager' => 'Manager',
-        'editor' => 'Editor',
+        'member' => 'Member',
     ],
     'permissions' => [
         'create_user' => [
