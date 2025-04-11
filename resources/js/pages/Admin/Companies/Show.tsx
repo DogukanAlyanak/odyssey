@@ -1,6 +1,7 @@
 import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
+import { Edit, ArrowLeft } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -65,11 +66,13 @@ export default function Show({ company }: ShowProps) {
                         <div className="flex gap-2">
                             <Link href={route('admin.companies.edit', company.id)}>
                                 <Button variant="outline">
+                                    <Edit className="h-4 w-4 mr-2" />
                                     {t('admin.companies.actions.edit')}
                                 </Button>
                             </Link>
                             <Link href={route('admin.companies.index')}>
                                 <Button variant="outline">
+                                    <ArrowLeft className="h-4 w-4 mr-2" />
                                     {t('admin.companies.actions.back')}
                                 </Button>
                             </Link>

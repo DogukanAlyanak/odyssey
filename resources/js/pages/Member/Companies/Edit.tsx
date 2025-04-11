@@ -26,7 +26,7 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/components/ui/tabs';
-import { Building2, X, UserPlus, User as UserIcon, Mail } from 'lucide-react';
+import { Building2, X, UserPlus, User as UserIcon, Mail, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
@@ -190,12 +190,20 @@ export default function Edit({ company, errors, auth }: EditProps) {
         <MemberLayout>
             <Head title={t('member.companies.edit_company')} />
 
-            <HeadingSmall
-                title={t('member.companies.edit_company')}
-                breadcrumbs={breadcrumbs}
-                description={t('member.companies.edit_description')}
-                icon={<Building2 className="h-6 w-6 text-gray-600 dark:text-gray-400" />}
-            />
+            <div className="flex justify-between items-start">
+                <HeadingSmall
+                    title={t('member.companies.edit_company')}
+                    breadcrumbs={breadcrumbs}
+                    description={t('member.companies.edit_description')}
+                    icon={<Building2 className="h-6 w-6 text-gray-600 dark:text-gray-400" />}
+                />
+                <Button asChild>
+                    <Link href={route('member.companies.show', company.slug)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        {t('member.companies.actions.view')}
+                    </Link>
+                </Button>
+            </div>
 
             <form onSubmit={handleSubmit} className="mt-6">
                 <Tabs defaultValue="general" className="w-full">

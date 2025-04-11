@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
+
+            // relations
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
+
+            // fields
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('email')->nullable();
@@ -21,8 +25,12 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('website')->nullable();
             $table->text('description')->nullable();
+
+            // status
             $table->boolean('is_active')->default(true);
             $table->boolean('is_locked')->default(false);
+
+            // timestamps
             $table->timestamps();
             $table->softDeletes();
         });

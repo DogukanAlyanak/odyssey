@@ -124,7 +124,6 @@ export default function Create({ company, errors }: CreateProps) {
                                     value={data.name}
                                     onChange={handleNameChange}
                                     error={errors.name}
-                                    placeholder={t('member.businesses.placeholder.main_business')}
                                     required
                                 />
                             </div>
@@ -214,7 +213,6 @@ export default function Create({ company, errors }: CreateProps) {
                                     value={data.website}
                                     onChange={(e) => setData('website', e.target.value)}
                                     error={errors.website}
-                                    placeholder="https://example.com"
                                 />
                             </div>
                         </CardContent>

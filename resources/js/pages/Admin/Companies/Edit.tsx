@@ -4,6 +4,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import { useEffect, useState } from 'react';
 import { slugify } from '@/lib/utils';
 import axios from 'axios';
+import { Link } from '@inertiajs/react';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -18,7 +19,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Eye } from 'lucide-react';
 
 interface User {
     id: number;
@@ -202,6 +203,12 @@ export default function Edit({ company, errors, auth }: EditProps) {
                             title={t('admin.companies.edit_company')}
                             description={t('admin.companies.edit_description')}
                         />
+                        <Button asChild variant="outline">
+                            <Link href={route('admin.companies.show', company.id)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                {t('admin.companies.actions.view')}
+                            </Link>
+                        </Button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">

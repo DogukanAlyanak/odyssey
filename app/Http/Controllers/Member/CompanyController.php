@@ -69,6 +69,16 @@ class CompanyController extends Controller
             }
         }
 
+        // create business
+        $company->businesses()->create([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'is_active' => true,
+            'is_locked' => true,
+        ]);
+
         return redirect()->route('member.companies.edit', $company->slug)
             ->with('success', trans('member.companies.messages.created'));
     }
