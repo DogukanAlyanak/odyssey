@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title' => 'Üye Paneli',
+
     'companies' => [
         'management' => 'Şirketlerim',
         'title' => 'Şirketlerim',
@@ -65,5 +67,19 @@ return [
             'user_add_error' => 'Kullanıcı ekleme hatası',
             'user_add_error_description' => 'Kullanıcı eklenirken bir hata oluştu. Lütfen tekrar deneyin.',
         ],
+    ],
+    'sidebar' => [
+        'dashboard' => 'Kontrol Paneli',
+        'my_companies' => 'Şirketlerim',
+        'new_company' => 'Yeni Şirket',
+        'team_members' => 'Takım Üyeleri',
+    ],
+    'dashboard' => [
+        'title' => 'Üye Paneli',
+        'description' => 'Şirketlerinizi ve takım üyelerinizi yönetin',
+    ],
+    'my_companies' => [
+        'title' => 'Şirketlerim',
+        'new_company' => 'Yeni Şirket Ekle',
     ],
 ];

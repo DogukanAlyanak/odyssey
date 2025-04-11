@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title' => 'Member Panel',
+
     'companies' => [
         'management' => 'My Companies',
         'title' => 'My Companies',
@@ -65,5 +67,19 @@ return [
             'user_add_error' => 'User add error',
             'user_add_error_description' => 'An error occurred while adding the user. Please try again.',
         ],
+    ],
+    'sidebar' => [
+        'dashboard' => 'Dashboard',
+        'my_companies' => 'My Companies',
+        'new_company' => 'New Company',
+        'team_members' => 'Team Members',
+    ],
+    'dashboard' => [
+        'title' => 'Member Panel',
+        'description' => 'Manage your companies and team members',
+    ],
+    'my_companies' => [
+        'title' => 'My Companies',
+        'new_company' => 'Add New Company',
     ],
 ];

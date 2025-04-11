@@ -1,4 +1,5 @@
 import { NavAdmin } from '@/components/nav-admin';
+import { NavMember } from '@/components/nav-member';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -50,6 +51,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={mainNavItems} />
                 <NavAdmin />
+                <NavMember />
             </SidebarContent>
 
             <SidebarFooter>
