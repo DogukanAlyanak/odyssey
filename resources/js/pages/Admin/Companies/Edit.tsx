@@ -1,8 +1,9 @@
 import { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { slugify } from '@/lib/utils';
+import axios from 'axios';
 
 import AppLayout from '@/layouts/app-layout';
 import AdminLayout from '@/layouts/admin/layout';
@@ -14,6 +15,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import InputError from '@/components/input-error';
 import { useToast } from '@/components/ui/use-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Plus, X } from 'lucide-react';
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
 
 interface EditProps {
     company: {
@@ -26,13 +37,22 @@ interface EditProps {
         website: string;
         description: string;
         is_active: boolean;
+        users: User[];
     };
     errors: Record<string, string>;
+    auth: {
+        user: User;
+    };
 }
 
-export default function Edit({ company, errors }: EditProps) {
+export default function Edit({ company, errors, auth }: EditProps) {
     const { t } = useTranslation();
     const { toast } = useToast();
+    const [searchEmail, setSearchEmail] = useState('');
+    const [searchResults, setSearchResults] = useState<User[]>([]);
+    const [showResults, setShowResults] = useState(false);
+    const [isAddingUser, setIsAddingUser] = useState(false);
+
     const { data, setData, put, processing } = useForm({
         name: company.name,
         slug: company.slug,
@@ -42,6 +62,7 @@ export default function Edit({ company, errors }: EditProps) {
         website: company.website,
         description: company.description,
         is_active: company.is_active,
+        users: company.users,
     });
 
     useEffect(() => {
@@ -63,6 +84,95 @@ export default function Edit({ company, errors }: EditProps) {
         },
     ];
 
+    const searchUsers = async (email: string) => {
+        if (email.length < 3) {
+            setSearchResults([]);
+            setShowResults(false);
+            return;
+        }
+
+        try {
+            const response = await axios.get(route('admin.search.users'), {
+                params: { search: email }
+            });
+            setSearchResults(response.data);
+            setShowResults(true);
+        } catch (error) {
+            console.error('Kullanıcı arama hatası:', error);
+        }
+    };
+
+    const handleEmailSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const emailValue = e.target.value;
+        setSearchEmail(emailValue);
+        searchUsers(emailValue);
+    };
+
+    const addUser = (user: User) => {
+        // Eğer kullanıcı zaten eklenmişse, yeniden ekleme
+        const userExists = data.users.some(u => u.email === user.email);
+        if (!userExists) {
+            setData('users', [...data.users, user]);
+        }
+        setSearchEmail('');
+        setShowResults(false);
+    };
+
+    const addUserByEmail = async () => {
+        if (!searchEmail || searchEmail.length < 3) {
+            toast({
+                title: t('admin.companies.users.search_error'),
+                description: t('admin.companies.users.email_placeholder'),
+            });
+            return;
+        }
+
+        setIsAddingUser(true);
+
+        try {
+            const response = await axios.get(route('admin.search.users'), {
+                params: { search: searchEmail }
+            });
+
+            if (response.data && response.data.length > 0) {
+                // Tam eşleşmeyi kontrol et
+                const exactMatch = response.data.find(user => user.email.toLowerCase() === searchEmail.toLowerCase());
+
+                if (exactMatch) {
+                    addUser(exactMatch);
+                    toast({
+                        title: t('admin.companies.users.user_added'),
+                        description: exactMatch.name,
+                    });
+                } else {
+                    toast({
+                        title: t('admin.companies.users.search_error'),
+                        description: t('admin.companies.users.no_exact_match'),
+                    });
+                }
+            } else {
+                toast({
+                    title: t('admin.companies.users.search_error'),
+                    description: t('admin.companies.users.user_not_found'),
+                });
+            }
+        } catch (error) {
+            toast({
+                title: t('admin.companies.users.search_error'),
+                description: t('admin.companies.users.error_description'),
+            });
+        } finally {
+            setIsAddingUser(false);
+        }
+    };
+
+    const removeUser = (email: string) => {
+        // Kullanıcının kendisini çıkarmasını önle
+        if (email === auth.user.email) return;
+
+        setData('users', data.users.filter(user => user.email !== email));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         put(route('admin.companies.update', company.id), {
@@ -74,7 +184,6 @@ export default function Edit({ company, errors }: EditProps) {
             },
             onError: () => {
                 toast({
-                    variant: "destructive",
                     title: t('admin.companies.messages.error'),
                     description: t('admin.companies.messages.error_description'),
                 });
@@ -173,6 +282,95 @@ export default function Edit({ company, errors }: EditProps) {
                             />
                             {errors.description && <InputError message={errors.description} />}
                         </div>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>{t('admin.companies.users.title')}</CardTitle>
+                                <CardDescription>{t('admin.companies.users.description')}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="userEmail">{t('admin.companies.users.add_by_email')}</Label>
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <Input
+                                                    id="userEmail"
+                                                    placeholder={t('admin.companies.users.email_placeholder')}
+                                                    value={searchEmail}
+                                                    onChange={handleEmailSearch}
+                                                />
+                                                {showResults && searchResults.length > 0 && (
+                                                    <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+                                                        {searchResults.map((user) => (
+                                                            <div
+                                                                key={user.email}
+                                                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                                                onClick={() => addUser(user)}
+                                                            >
+                                                                <div className="flex items-center space-x-2">
+                                                                    <Avatar className="h-8 w-8">
+                                                                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                                                    </Avatar>
+                                                                    <div>
+                                                                        <div className="font-medium">{user.name}</div>
+                                                                        <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                size="icon"
+                                                onClick={addUserByEmail}
+                                                disabled={isAddingUser || !searchEmail}
+                                            >
+                                                <Plus className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>{t('admin.companies.users.added_users')}</Label>
+                                        <div className="space-y-2">
+                                            {data.users.map((user) => (
+                                                <div
+                                                    key={user.email}
+                                                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded-md"
+                                                >
+                                                    <div className="flex items-center space-x-2">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <div className="font-medium">{user.name}</div>
+                                                            <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+                                                        </div>
+                                                        {user.email === auth.user.email && (
+                                                            <Badge variant="outline" className="ml-2">
+                                                                {t('admin.companies.users.current_user')}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        disabled={user.email === auth.user.email}
+                                                        onClick={() => removeUser(user.email)}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
 
                         <div className="flex items-center space-x-2">
                             <Switch

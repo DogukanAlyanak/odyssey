@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('companies', CompanyController::class);
+        Route::get('search-users', [CompanyController::class, 'searchUsers'])->name('search.users');
     });
 
     // Editör rotaları

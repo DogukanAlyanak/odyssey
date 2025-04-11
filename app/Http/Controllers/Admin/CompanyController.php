@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class CompanyController extends Controller
@@ -47,9 +49,26 @@ class CompanyController extends Controller
             'website' => 'nullable|url|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+            'users' => 'nullable|array',
+            'users.*.email' => 'nullable|email|exists:users,email',
         ]);
 
-        $company = Company::create($validated);
+        $company = Company::create(collect($validated)->except('users')->toArray());
+
+        // Oturum kullanıcısını ekle
+        $company->users()->attach(Auth::id());
+
+        // Ek kullanıcıları ekle
+        if (!empty($validated['users'])) {
+            foreach ($validated['users'] as $userData) {
+                if (!empty($userData['email'])) {
+                    $user = User::where('email', $userData['email'])->first();
+                    if ($user && !$company->users->contains($user->id)) {
+                        $company->users()->attach($user->id);
+                    }
+                }
+            }
+        }
 
         return redirect()->route('admin.companies.edit', $company)
             ->with('success', trans('admin.companies.messages.created'));
@@ -58,14 +77,14 @@ class CompanyController extends Controller
     public function show(Company $company)
     {
         return Inertia::render('Admin/Companies/Show', [
-            'company' => $company,
+            'company' => $company->load('users'),
         ]);
     }
 
     public function edit(Company $company)
     {
         return Inertia::render('Admin/Companies/Edit', [
-            'company' => $company,
+            'company' => $company->load('users'),
         ]);
     }
 
@@ -80,9 +99,25 @@ class CompanyController extends Controller
             'website' => 'nullable|url|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+            'users' => 'nullable|array',
+            'users.*.email' => 'nullable|email|exists:users,email',
         ]);
 
-        $company->update($validated);
+        $company->update(collect($validated)->except('users')->toArray());
+
+        // Kullanıcıları güncelle
+        if (isset($validated['users'])) {
+            $userIds = [];
+            foreach ($validated['users'] as $userData) {
+                if (!empty($userData['email'])) {
+                    $user = User::where('email', $userData['email'])->first();
+                    if ($user) {
+                        $userIds[] = $user->id;
+                    }
+                }
+            }
+            $company->users()->sync($userIds);
+        }
 
         return back()->with('success', trans('admin.companies.messages.updated'));
     }
@@ -93,5 +128,16 @@ class CompanyController extends Controller
 
         return redirect()->route('admin.companies.index')
             ->with('success', trans('admin.companies.messages.deleted'));
+    }
+
+    public function searchUsers(Request $request)
+    {
+        $search = $request->input('search');
+        $users = User::where('email', 'like', "%{$search}%")
+            ->orWhere('name', 'like', "%{$search}%")
+            ->limit(10)
+            ->get(['id', 'name', 'email']);
+
+        return response()->json($users);
     }
 }

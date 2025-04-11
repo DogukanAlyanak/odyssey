@@ -7,7 +7,14 @@ import AdminLayout from '@/layouts/admin/layout';
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
 
 interface ShowProps {
     company: {
@@ -22,6 +29,7 @@ interface ShowProps {
         is_active: boolean;
         created_at: string;
         updated_at: string;
+        users: User[];
     };
 }
 
@@ -157,6 +165,35 @@ export default function Show({ company }: ShowProps) {
                                 <p className="whitespace-pre-wrap">
                                     {company.description || t('admin.companies.no_data')}
                                 </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="md:col-span-2">
+                            <CardHeader>
+                                <CardTitle>{t('admin.companies.users.title')}</CardTitle>
+                                <CardDescription>{t('admin.companies.users.description')}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {company.users && company.users.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {company.users.map((user) => (
+                                            <div
+                                                key={user.id}
+                                                className="flex items-center space-x-4 p-2 bg-gray-50 dark:bg-gray-800 rounded-md"
+                                            >
+                                                <Avatar className="h-10 w-10">
+                                                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <div className="font-medium">{user.name}</div>
+                                                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p>{t('admin.companies.users.no_users')}</p>
+                                )}
                             </CardContent>
                         </Card>
 
