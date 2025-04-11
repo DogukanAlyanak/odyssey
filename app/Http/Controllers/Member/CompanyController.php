@@ -80,7 +80,7 @@ class CompanyController extends Controller
             ->firstOrFail();
 
         return Inertia::render('Member/Companies/Show', [
-            'company' => $company->load('users'),
+            'company' => $company->load(['users', 'businesses']),
         ]);
     }
 

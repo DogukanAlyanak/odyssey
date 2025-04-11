@@ -6,7 +6,7 @@ import MemberLayout from '@/layouts/member/layout';
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
 import {
-    Building2, Edit, Calendar, Mail, Phone, Globe, MapPin, User as UserIcon
+    Building2, Edit, Calendar, Mail, Phone, Globe, MapPin, User as UserIcon, Store, Eye
 } from 'lucide-react';
 import {
     Card,
@@ -17,6 +17,16 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+
+interface Business {
+    id: number;
+    name: string;
+    slug: string;
+    email: string | null;
+    phone: string | null;
+    is_active: boolean;
+    is_locked: boolean;
+}
 
 interface Company {
     id: number;
@@ -29,6 +39,7 @@ interface Company {
     description: string | null;
     is_active: boolean;
     users: User[];
+    businesses: Business[];
     created_at: string;
     updated_at: string;
 }
@@ -62,12 +73,20 @@ export default function Show({ company }: PageProps) {
                     description={t('member.companies.company_details')}
                     icon={<Building2 className="h-6 w-6 text-gray-600 dark:text-gray-400" />}
                 />
-                <Button asChild>
-                    <Link href={route('member.companies.edit', company.slug)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        {t('member.companies.actions.edit')}
-                    </Link>
-                </Button>
+                <div className="flex space-x-2">
+                    <Button asChild variant="secondary">
+                        <Link href={route('member.businesses.index', company.slug)}>
+                            <Store className="h-4 w-4 mr-2" />
+                            {t('member.businesses.title')}
+                        </Link>
+                    </Button>
+                    <Button asChild>
+                        <Link href={route('member.companies.edit', company.slug)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            {t('member.companies.actions.edit')}
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -188,6 +207,101 @@ export default function Show({ company }: PageProps) {
                                 </div>
                             ))}
                         </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="md:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Store className="h-5 w-5 mr-2" />
+                            {t('member.businesses.title')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('member.businesses.company_businesses')}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {company.businesses && company.businesses.length > 0 ? (
+                            <div className="rounded-md border overflow-hidden">
+                                <table className="w-full caption-bottom text-sm">
+                                    <thead className="bg-secondary/50">
+                                        <tr className="border-b">
+                                            <th className="h-10 px-4 text-left align-middle font-medium">
+                                                {t('member.businesses.fields.name')}
+                                            </th>
+                                            <th className="h-10 px-4 text-left align-middle font-medium">
+                                                {t('member.businesses.fields.email')}
+                                            </th>
+                                            <th className="h-10 px-4 text-left align-middle font-medium">
+                                                {t('member.businesses.fields.phone')}
+                                            </th>
+                                            <th className="h-10 px-4 text-center align-middle font-medium">
+                                                {t('member.businesses.fields.status')}
+                                            </th>
+                                            <th className="h-10 px-4 text-right align-middle font-medium">
+                                                {t('member.businesses.actions.actions')}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {company.businesses.map((business) => (
+                                            <tr key={business.id} className="border-t">
+                                                <td className="p-4 align-middle">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">{business.name}</span>
+                                                        <span className="text-xs text-gray-500">{business.slug}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 align-middle">
+                                                    {business.email || '-'}
+                                                </td>
+                                                <td className="p-4 align-middle">
+                                                    {business.phone || '-'}
+                                                </td>
+                                                <td className="p-4 align-middle text-center">
+                                                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${business.is_active ? 'bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-400'}`}>
+                                                        {business.is_active ? t('member.businesses.status.active') : t('member.businesses.status.inactive')}
+                                                    </span>
+                                                    {business.is_locked && (
+                                                        <span className="ml-2 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-400">
+                                                            {t('member.businesses.status.locked')}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="p-4 align-middle text-right">
+                                                    <Button asChild size="sm" variant="outline">
+                                                        <Link href={route('member.businesses.show', {
+                                                            slug: company.slug,
+                                                            id: business.id
+                                                        })}>
+                                                            <Eye className="h-4 w-4 mr-1" />
+                                                            {t('member.businesses.actions.view')}
+                                                        </Link>
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="py-8 text-center">
+                                <Store className="mx-auto h-12 w-12 text-gray-400" />
+                                <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">
+                                    {t('member.businesses.no_businesses')}
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    {t('member.businesses.get_started')}
+                                </p>
+                                <div className="mt-6">
+                                    <Button asChild>
+                                        <Link href={route('member.businesses.create', company.slug)}>
+                                            {t('member.businesses.new_business')}
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 

@@ -13,6 +13,15 @@ Route::middleware(['auth', 'verified'])->prefix('member')->name('member.')->grou
     Route::post('/my-companies/{slug}', [CompanyController::class, 'update'])->name('companies.update');
     Route::delete('/my-companies/{slug}', [CompanyController::class, 'destroy'])->name('companies.destroy');
 
+    // İşletmeler
+    Route::get('/companies/{slug}/businesses', [\App\Http\Controllers\Member\BusinessController::class, 'index'])->name('businesses.index');
+    Route::get('/companies/{slug}/businesses/create', [\App\Http\Controllers\Member\BusinessController::class, 'create'])->name('businesses.create');
+    Route::post('/companies/{slug}/businesses', [\App\Http\Controllers\Member\BusinessController::class, 'store'])->name('businesses.store');
+    Route::get('/companies/{slug}/businesses/{id}', [\App\Http\Controllers\Member\BusinessController::class, 'show'])->name('businesses.show');
+    Route::get('/companies/{slug}/businesses/{id}/edit', [\App\Http\Controllers\Member\BusinessController::class, 'edit'])->name('businesses.edit');
+    Route::post('/companies/{slug}/businesses/{id}', [\App\Http\Controllers\Member\BusinessController::class, 'update'])->name('businesses.update');
+    Route::delete('/companies/{slug}/businesses/{id}', [\App\Http\Controllers\Member\BusinessController::class, 'destroy'])->name('businesses.destroy');
+
     // Kullanıcı arama endpoint'i
     Route::get('/search-users', [CompanyController::class, 'searchUsers'])->name('search.users');
 });
