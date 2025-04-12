@@ -142,6 +142,7 @@ return [
         'my_companies' => 'Şirketlerim',
         'new_company' => 'Yeni Şirket',
         'team_members' => 'Takım Üyeleri',
+        'company_list' => 'Şirket Listesi',
     ],
     'dashboard' => [
         'title' => 'Üye Paneli',

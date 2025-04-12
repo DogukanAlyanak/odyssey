@@ -142,6 +142,7 @@ return [
         'my_companies' => 'My Companies',
         'new_company' => 'New Company',
         'team_members' => 'Team Members',
+        'company_list' => 'Company List',
     ],
     'dashboard' => [
         'title' => 'Member Panel',
